@@ -1,0 +1,23 @@
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f8f8f8;
+}
+
+header {
+    margin-top: 2%;
+    text-align: center;
+    font-weight: 200;
+    font-size: 24pt;
+}
+
+header h2 {
+    font-size: 18pt;
+}
+
+main {
+    width: 60%;
+    margin: 4% auto;
+    font-size: 14pt;
+
+}
