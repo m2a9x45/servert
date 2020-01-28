@@ -19,7 +19,16 @@ main {
     width: 60%;
     margin: 4% auto;
     font-size: 14pt;
+}
 
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgb(121, 121, 121);
+    color: white;
+    text-align: center;
 }
 
 #custName {
