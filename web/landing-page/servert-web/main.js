@@ -2,31 +2,37 @@ const submitButton = document.getElementById("submitButton");
 const custName = document.getElementById("custName");
 const custEmail= document.getElementById("custEmail");
 
-const URL_API = "";
+const URL_API = "http://localhost:8000";
 
 submitButton.addEventListener("click", (e) => {
     event.preventDefault(e);
     
-    let name = custName.value;
-    let email = custEmail.value;
+    const name = custName.value;
+    const email = custEmail.value;
 
-    if (name.trim() || email.trim() == "") {
-        console.log("no values");
-        // show error
-    } else {
-        let data = {
-            name,
-            email
-        }
+    console.log(name, email);
     
-        console.log(data);
-        sendData(data).then(data => console.log(data));
-        
+    let formData = {
+        name,
+        email
     }
+
+    console.log(formData);
+    
+    fetch(`${URL_API}/intrest`, {
+        method: 'post',
+        headers: {
+            "Content-type": "application/json"
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then((data) => console.log(data))
+    .catch(function (error) {
+        console.log('Request failed', error);
+    });
+    
+        
+    
 });
 
-async function sendData(data){
-    let response = await fetch(URL_API);
-    let data = await response.json();
-    return data; 
-}
