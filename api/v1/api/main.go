@@ -9,9 +9,12 @@ import (
 	"net/http"
 
 	"github.com/gorilla/handlers"
+	"github.com/segmentio/ksuid"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type product struct {
@@ -34,6 +37,12 @@ type resObj struct {
 	Message string `json:"message"`
 }
 
+type signUpObj struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 var db *sql.DB
 var err error
 
@@ -54,6 +63,7 @@ func main() {
 
 	r.HandleFunc("/products", GetProducts).Methods("GET")
 	r.HandleFunc("/intrest", RegIntrest).Methods("POST", "OPTIONS")
+	r.HandleFunc("/signup", signup).Methods("POST", "OPTIONS")
 
 	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(header, methods, origin)(r)))
 }
@@ -66,21 +76,21 @@ func RegIntrest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	destails := details{}
+	details := details{}
 
 	jsn, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal("Error wilst reading r body", err)
 	}
 
-	err = json.Unmarshal(jsn, &destails)
+	err = json.Unmarshal(jsn, &details)
 	if err != nil {
 		log.Fatal("Error wilst unmarshaling json", err)
 	}
 
-	log.Println(destails.Email, destails.Name)
+	log.Println(details.Email, details.Name)
 
-	result, err := db.Query("INSERT INTO reg (name, email) VALUES (?,?)", destails.Name, destails.Email)
+	result, err := db.Query("INSERT INTO reg (name, email) VALUES (?,?)", details.Name, details.Email)
 	if err != nil {
 		log.Fatal("Error wilst inserting into DB", err)
 	}
@@ -121,4 +131,53 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(allproducts)
 	json.NewEncoder(w).Encode(allproducts)
+}
+
+func signup(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == http.MethodOptions {
+		return
+	}
+
+	signup := signUpObj{}
+
+	jsn, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("Error wilst reading r body", err)
+	}
+
+	err = json.Unmarshal(jsn, &signup)
+	if err != nil {
+		log.Fatal("Error wilst unmarshaling json", err)
+	}
+
+	log.Println(signup)
+
+	password := []byte(signup.Password)
+
+	hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(hashedPassword))
+
+	id := ksuid.New()
+	userID := "user_" + id.String()
+
+	println(userID)
+
+	// check user_id doesn't exist and if it does try a different one
+
+	// Then insert user into DB
+
+	// result, err := db.Query("INSERT INTO users (name, email, password) VALUES (?,?,?)", signup.Name, signup.Email, hashedPassword)
+	// if err != nil {
+	// 	log.Fatal("Error wilst inserting into DB", err)
+	// }
+
+	// defer result.Close()
+
+	// fmt.Println("Inserted Into DB")
+
 }
