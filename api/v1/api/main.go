@@ -154,6 +154,17 @@ func signup(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(signup)
 
+	// check that email doesn't already exit.
+
+	emailInDB := checkifemailexists(signup.Email)
+	if emailInDB != false {
+		res := resObj{false, "Email already in use"}
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	println("check if email exits and if it does this line should appear")
+
 	password := []byte(signup.Password)
 
 	hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
@@ -162,22 +173,79 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(string(hashedPassword))
 
+	userID := generateUserID()
+
+	println(userID, "seletced")
+
+	result, err := db.Query("INSERT INTO users (name, user_id, email, password) VALUES (?,?,?,?)", signup.Name, userID, signup.Email, hashedPassword)
+	if err != nil {
+		log.Fatal("Error wilst inserting into DB", err)
+	}
+
+	defer result.Close()
+
+	// issue JWT so user can login into protected routes
+
+	fmt.Println("Inserted Into DB")
+
+	res := resObj{true, "Details inserted into DB"}
+
+	json.NewEncoder(w).Encode(res)
+
+}
+
+func generateUserID() string {
+
 	id := ksuid.New()
 	userID := "user_" + id.String()
 
 	println(userID)
 
-	// check user_id doesn't exist and if it does try a different one
+	result, err := db.Query("SELECT user_id from users WHERE user_id=(?)", userID)
+	if err != nil {
+		println(err)
+	}
 
-	// Then insert user into DB
+	defer result.Close()
 
-	// result, err := db.Query("INSERT INTO users (name, email, password) VALUES (?,?,?)", signup.Name, signup.Email, hashedPassword)
-	// if err != nil {
-	// 	log.Fatal("Error wilst inserting into DB", err)
-	// }
+	for result.Next() {
+		var userid string
+		err := result.Scan(&userid)
+		if err != nil {
+			panic(err)
+		}
+		if userid != "" {
+			// make new user id
+			println(userid, "already exists")
+			generateUserID()
+		}
+	}
 
-	// defer result.Close()
+	return userID
+}
 
-	// fmt.Println("Inserted Into DB")
+func checkifemailexists(email string) bool {
+
+	result, err := db.Query("SELECT email from users WHERE email=(?)", email)
+	if err != nil {
+		println(err)
+	}
+
+	defer result.Close()
+
+	for result.Next() {
+		var emailfound string
+		err := result.Scan(&emailfound)
+		if err != nil {
+			panic(err)
+		}
+		if emailfound != "" {
+			// make new user id
+			println(emailfound, "already exists")
+			return true
+		}
+	}
+
+	return false
 
 }
