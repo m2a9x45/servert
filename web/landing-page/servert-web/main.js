@@ -4,8 +4,8 @@ const custEmail= document.getElementById("custEmail");
 
 const URL_API = "http://localhost:8000";
 
-submitButton.addEventListener("click", (e) => {
-    event.preventDefault(e);
+submitButton.addEventListener("click", () => {
+    event.preventDefault();
     
     const name = custName.value;
     const email = custEmail.value;
@@ -21,6 +21,7 @@ submitButton.addEventListener("click", (e) => {
     
     fetch(`${URL_API}/intrest`, {
         method: 'post',
+        credentials: 'include',
         headers: {
             "Content-type": "application/json"
         },
