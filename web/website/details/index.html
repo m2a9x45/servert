@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="global.css" />
+    <link rel="stylesheet" href="details.css">
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <title>Servert - details</title>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <ul class="navbarList">
+                <li id="navbarItem"><a href="../" >Servert</a></li>
+                <!-- <li id="navbarItem"><a href="./signin/">Login</a></li>
+                <li id="navbarItem"><a href="./signup/">Sign Up</a></li> -->
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="content">
+            <div class="orderInfo">
+                <h2>Order Info</h2>
+            </div>
+
+            <form id="payment-form">
+                <div id="card-element">
+                    <!-- Elements will create input elements here -->
+                </div>
+                
+                <!-- We'll put the error messages in this element -->
+                <div id="card-errors" role="alert"></div>
+                
+                <button id="submit">Pay</button>
+            </form>
+        </div>
+    </main>
+
+    
+
+    <script>
+
+    
+    </script>
+
+    <script src="details.js"></script>
+</body>
+</html>

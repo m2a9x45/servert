@@ -1,0 +1,136 @@
+body {
+    margin: 0px;
+    background-color: #fafafa;
+    font-family: 'Roboto', sans-serif; 
+}
+
+header {
+    background-color: #0e1c31;
+    padding: 1em;
+}
+
+.navbar {
+    margin: 0 auto;
+    width: 50%;
+}
+
+.navbarList {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+#navbarItem {
+    display: inline-block;
+    list-style-type: none;
+    font-family: 'Roboto', sans-serif; 
+    font-size: 14pt;
+    padding-left: 1rem;
+}
+
+nav ul li:first-child {
+    margin-right: auto;
+}
+
+#navbarItem a, #logo a {
+    text-decoration: none;
+    color: #f2f2f2;
+}
+
+#navbarItem a:hover, #logo a:hover {
+    color: #2a64b8;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    margin: 2%;
+}
+
+.product {
+    /* border: 1px solid rgba(0, 0, 0, 0.8); */
+    margin: 10px;
+    padding: 10px;
+    /* font-size: 30px; */
+    text-align: center;
+    width: 75%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#productName {
+    font-size: 16pt;;
+    font-weight: 400;
+    margin: 1% auto;
+}
+
+#productCore {
+    font-size: 14pt;;
+    margin: 8% auto 1% auto;
+    font-weight: 300;
+}
+
+#productRam {
+    font-size: 14pt;;
+    margin: 1% auto;
+    font-weight: 300;
+}
+
+#productDrive {
+    font-size: 14pt;;
+    margin: 1% auto;
+    font-weight: 300;
+}
+
+#productprice {
+    font-size: 14pt;;
+    margin: 1% auto 8% auto;
+    font-weight: 300;
+}
+
+#addProduct {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 4% 12%;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14pt;
+    border-radius: 5px;
+    margin: 1% auto;
+}
+
+#addProduct:hover {
+    background-color: rgb(53, 236, 59);
+}
+
+@media only screen and (max-width: 800px) {
+    .navbar {
+        width: 80%;
+    }
+
+    .products {
+        grid-template-columns: auto auto;
+    }
+
+    .product {
+        width: 80%;
+        margin: 2% auto;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .navbar {
+        width: 100%;
+    }
+
+    .products {
+        grid-template-columns: auto;
+    }
+
+    .product {
+        width: 80%;
+        margin: 2% auto;
+    }
+}
+

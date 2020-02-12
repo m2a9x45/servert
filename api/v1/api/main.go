@@ -15,16 +15,22 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/segmentio/ksuid"
+	stripe "github.com/stripe/stripe-go"
+	"github.com/stripe/stripe-go/paymentintent"
 
 	_ "github.com/go-sql-driver/mysql"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-type product struct {
+type Product struct {
 	ID       string  `json:"id"`
+	UIDD     string  `json:"uuid"`
 	Name     string  `json:"name"`
 	Des      string  `json:"des"`
+	CPU      string  `json:"cpu"`
+	RAM      string  `json:"ram"`
+	Disk     string  `json:"disk"`
 	Price    float64 `json:"price"`
 	Instock  bool    `json:"instock"`
 	Setupfee float64 `json:"setupfee"`
@@ -51,6 +57,10 @@ type signUpObj struct {
 type Claims struct {
 	UserID string `json:"user_id"`
 	jwt.StandardClaims
+}
+
+type CheckoutData struct {
+	ClientSecret string `json:"clientecret"`
 }
 
 var db *sql.DB
@@ -87,10 +97,15 @@ func main() {
 	origin := handlers.AllowedOrigins([]string{"http://127.0.0.1:8080"})
 	creds := handlers.AllowCredentials()
 
+	r.HandleFunc("/products/{prodID}", GetProducts).Methods("GET")
 	r.HandleFunc("/products", GetProducts).Methods("GET")
 	r.HandleFunc("/intrest", RegIntrest).Methods("POST", "OPTIONS")
 	r.HandleFunc("/signup", signup).Methods("POST", "OPTIONS")
 	r.HandleFunc("/signin", signin).Methods("POST", "OPTIONS")
+	r.HandleFunc("/account", account).Methods("GET")
+	r.HandleFunc("/create-payment-intent/{prodID}", createPaymentIntent).Methods("GET")
+	r.HandleFunc("/loggedIn", isLoggedIn).Methods("GET")
+	r.HandleFunc("/refresh", Refresh).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(header, methods, origin, creds)(r)))
 
@@ -193,9 +208,44 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	type Category product
+	vars := mux.Vars(r)
+	id := vars["prodID"]
 
-	var allproducts []product
+	if id != "" {
+		var allproducts []Product
+
+		result, err := db.Query("SELECT * from products WHERE prod_id=(?)", id)
+		if err != nil {
+			println(err)
+		}
+
+		defer result.Close()
+
+		for result.Next() {
+			var product Product
+			err := result.Scan(&product.ID, &product.UIDD, &product.Name, &product.Des, &product.CPU, &product.RAM, &product.Disk, &product.Price, &product.Instock, &product.Setupfee, &product.Discount)
+			if err != nil {
+				panic(err.Error())
+			}
+			allproducts = append(allproducts, product)
+		}
+
+		println(len(allproducts))
+
+		if len(allproducts) == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			res := resObj{false, "product not found"}
+			json.NewEncoder(w).Encode(res)
+		}
+
+		fmt.Println(allproducts)
+		json.NewEncoder(w).Encode(allproducts)
+		return
+	}
+
+	// type Category product
+
+	var allproducts []Product
 
 	result, err := db.Query("SELECT * from products")
 	if err != nil {
@@ -205,8 +255,8 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 	defer result.Close()
 
 	for result.Next() {
-		var product product
-		err := result.Scan(&product.ID, &product.Name, &product.Des, &product.Price, &product.Instock, &product.Setupfee, &product.Discount)
+		var product Product
+		err := result.Scan(&product.ID, &product.UIDD, &product.Name, &product.Des, &product.CPU, &product.RAM, &product.Disk, &product.Price, &product.Instock, &product.Setupfee, &product.Discount)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -376,4 +426,211 @@ func signin(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err) // nil means it is a match
 	}
 
+}
+
+func account(w http.ResponseWriter, r *http.Request) {
+	// We can obtain the session token from the requests cookies, which come with every request
+	c, err := r.Cookie("token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			// If the cookie is not set, return an unauthorized status
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		// For any other type of error, return a bad request status
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// Get the JWT string from the cookie
+	tknStr := c.Value
+
+	// Initialize a new instance of `Claims`
+	claims := &Claims{}
+
+	// Parse the JWT string and store the result in `claims`.
+	// Note that we are passing the key in this method as well. This method will return an error
+	// if the token is invalid (if it has expired according to the expiry time we set on sign in),
+	// or if the signature does not match
+	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if !tkn.Valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	// Finally, return the welcome message to the user, along with their
+	// username given in the token
+	res := resObj{true, claims.UserID}
+
+	json.NewEncoder(w).Encode(res)
+}
+
+func createPaymentIntent(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	id := vars["prodID"]
+
+	if id != "" {
+		var allproducts []Product
+
+		result, err := db.Query("SELECT * from products WHERE prod_id=(?)", id)
+		if err != nil {
+			println(err)
+			res := resObj{false, "Couldn't find product"}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
+		defer result.Close()
+
+		for result.Next() {
+			var product Product
+			err := result.Scan(&product.ID, &product.UIDD, &product.Name, &product.Des, &product.CPU, &product.RAM, &product.Disk, &product.Price, &product.Instock, &product.Setupfee, &product.Discount)
+			if err != nil {
+				panic(err.Error())
+			}
+			allproducts = append(allproducts, product)
+		}
+
+		if len(allproducts) == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			res := resObj{false, "product not found"}
+			json.NewEncoder(w).Encode(res)
+			return
+		}
+
+		stripe.Key = "sk_test_OGXIlmLXL1Gvhpa9jqBdxutN00YB96uOjP"
+
+		price := allproducts[0].Price
+		pricePennies := int64(price * 100)
+		println(price, " in £")
+		println(price, " in p")
+
+		params := &stripe.PaymentIntentParams{
+			Amount:   stripe.Int64(pricePennies),
+			Currency: stripe.String(string(stripe.CurrencyGBP)),
+		}
+
+		intent, _ := paymentintent.New(params)
+
+		data := CheckoutData{
+			ClientSecret: intent.ClientSecret,
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(data)
+
+	}
+}
+
+func isLoggedIn(w http.ResponseWriter, r *http.Request) {
+	c, err := r.Cookie("token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			// If the cookie is not set, return an unauthorized status
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		// For any other type of error, return a bad request status
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// Get the JWT string from the cookie
+	tknStr := c.Value
+
+	// Initialize a new instance of `Claims`
+	claims := &Claims{}
+
+	// Parse the JWT string and store the result in `claims`.
+	// Note that we are passing the key in this method as well. This method will return an error
+	// if the token is invalid (if it has expired according to the expiry time we set on sign in),
+	// or if the signature does not match
+	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if !tkn.Valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	// Finally, return the welcome message to the user, along with their
+	// username given in the token
+	res := resObj{true, claims.UserID}
+	json.NewEncoder(w).Encode(res)
+}
+
+// Refresh will return a new JWT when passed a vaild one
+func Refresh(w http.ResponseWriter, r *http.Request) {
+	// (BEGIN) The code uptil this point is the same as the first part of the `Welcome` route
+	c, err := r.Cookie("token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	tknStr := c.Value
+	claims := &Claims{}
+	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if !tkn.Valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	// (END) The code up-till this point is the same as the first part of the `Welcome` route
+
+	// We ensure that a new token is not issued until enough time has elapsed
+	// In this case, a new token will only be issued if the old token is within
+	// 30 seconds of expiry. Otherwise, return a bad request status
+	if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) > 75*time.Second {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// Now, create a new token for the current use, with a renewed expiration time
+	expirationTime := time.Now().Add(5 * time.Minute)
+	claims.ExpiresAt = expirationTime.Unix()
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// Set the new token as the users `token` cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:    "token",
+		Value:   tokenString,
+		Expires: expirationTime,
+	})
 }
