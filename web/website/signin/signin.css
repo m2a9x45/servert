@@ -1,14 +1,44 @@
 body {
-    margin: 0;
-    font-family: 'Montserrat', sans-serif;
-    background-color: #f8f8f8;
+    margin: 0px;
+    background-color: #fafafa;
+    font-family: 'Roboto', sans-serif; 
 }
 
 header {
-    margin-top: 2%;
-    text-align: center;
-    font-weight: 200;
-    font-size: 24pt;
+    background-color: #0e1c31;
+    padding: 1em;
+}
+
+.navbar {
+    margin: 0 auto;
+    width: 50%;
+}
+
+.navbarList {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+#navbarItem {
+    display: inline-block;
+    list-style-type: none;
+    font-family: 'Roboto', sans-serif; 
+    font-size: 14pt;
+    padding-left: 1rem;
+}
+
+nav ul li:first-child {
+    margin-right: auto;
+}
+
+#navbarItem a, #logo a {
+    text-decoration: none;
+    color: #f2f2f2;
+}
+
+#navbarItem a:hover, #logo a:hover {
+    color: #2a64b8;
 }
 
 header h2 {

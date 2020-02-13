@@ -30,7 +30,14 @@ submitButton.addEventListener("click", () => {
         body: JSON.stringify(formData)
     })
     .then(response => response.json())
-    .then((data) => console.log(data))
+    .then((data) => {
+        console.log(data);
+        if (data.success == true) {
+            window.location = "../"
+        } else {
+            alert("Login didn't work")
+        }
+    })
     .catch(function (error) {
         console.log('Request failed', error);
     });

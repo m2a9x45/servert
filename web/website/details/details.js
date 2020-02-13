@@ -8,6 +8,8 @@ var url = new URL(url_string);
 var c = url.searchParams.get("id");
 console.log(c);
 
+let productID = "";
+
 if (c == "" || c == null) {
     window.location = "../"
 }
@@ -52,6 +54,7 @@ window.addEventListener("load", () => {
     })
     .then(data => {
         console.log(data);
+        productID = data[0].uuid;
         addProdToPage(data[0]);
     })
     .catch(err => console.log(err))
@@ -139,6 +142,9 @@ form.addEventListener('submit', function(ev) {
         if (result.paymentIntent.status === 'succeeded') {
             console.log("payment made yaaaa");
             console.log(result);
+
+            // add order to DB
+            createOrder(result.paymentIntent.id, productID);
         }}
 });
 });
@@ -161,5 +167,30 @@ function refershToken() {
     .catch(function (error) {
         console.log('Request failed', error);
         console.log(response.status); 
+    });
+}
+
+function createOrder(payID, prodID) {
+
+    let formData = {
+        "PaymentID" : payID,
+        "ProductID" : prodID
+    }
+
+    console.log(formData);
+    
+
+    fetch(`${URL_API}/order`, {
+        method: 'post',
+        credentials: 'include',
+        headers: {
+            "Content-type": "application/json",
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then((data) => console.log(data))
+    .catch(function (error) {
+        console.log('Request failed', error);
     });
 }

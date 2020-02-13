@@ -1,8 +1,31 @@
+const orderInfo = document.querySelector(".orderInfo");
+const userData = document.querySelector(".userData");
+
 const URL_API = "http://127.0.0.1:8000";
 
 refershToken();
 
-fetch(`${URL_API}/account`, {
+fetch(`${URL_API}/loggedIn`, {
+    method: 'get',
+    credentials: 'include',
+    headers: {
+        "Content-type": "application/json",
+    }
+})
+.then(response => {
+    console.log(response.status); // Will show you the status
+        if (!response.ok) {
+                window.location = "../signin";
+        }
+        return response.json();
+})
+.then (data => console.log(data))
+.catch(function (error) {
+    console.log('Request failed', error);
+    console.log(response.status); 
+});
+
+fetch(`${URL_API}/acountInfo`, {
     method: 'get',
     credentials: 'include',
     headers: {
@@ -12,15 +35,42 @@ fetch(`${URL_API}/account`, {
 .then(response => response.json())
 .then (data => {
     console.log(data);
-    let userID = document.createElement("p")
-    userID.innerText = "Hey " + data.message;
+    let name = document.createElement("p")
+    name.innerText = "Name : " + data[0].Name;
 
-    document.body.append(userID);
+    let email = document.createElement("p")
+    email.innerText = "Email : " + data[0].Email;
+
+    userData.appendChild(name);
+    userData.appendChild(email);
 })
 .catch(function (error) {
     console.log('Request failed', error);
     console.log(response.status); 
 });
+
+fetch(`${URL_API}/order`, {
+    method: 'get',
+    credentials: 'include',
+    headers: {
+        "Content-type": "application/json",
+    }
+})
+.then(response => response.json())
+.then (data => {
+    console.log(data);
+
+    for (let i = 0; i < data.length; i++) {
+        getProducts(data[i].ProdID);
+    }
+})
+.catch(function (error) {
+    console.log('Request failed', error);
+    console.log(response.status); 
+});
+
+
+
 
 setInterval(function() {
     refershToken();
@@ -39,6 +89,52 @@ function refershToken() {
     .then (data => console.log(data))
     .catch(function (error) {
         console.log('Request failed', error);
-        console.log(response.status); 
     });
+}
+
+function getProducts(productID) {
+    fetch(`http://localhost:8000/products/${productID}`)
+    .then(res => {
+        console.log(res.status); // Will show you the status
+        if (!res.ok) {
+            console.log(res.status + " product not found");
+            
+        }
+        return res.json();
+    })
+    .then(data => {
+        console.log(data);
+        productID = data[0].uuid;
+        addProdToPage(data[0]);
+    })
+    .catch(err => console.log(err))
+}
+
+function addProdToPage(product) {
+    let name = document.createElement("p");
+    name.innerText = product.name;
+
+    let spec = document.createElement("h3");
+    spec.innerText = "Specs"
+
+    let cpu = document.createElement("p");
+    cpu.innerText = `Number of CPU cores : ${product.cpu} cores`;
+
+    let ram = document.createElement("p");
+    ram.innerText = `Amount of RAM : ${product.ram} GB`;
+
+    let disk = document.createElement("p");
+    disk.innerText = `Disk space : ${product.disk} GB`;
+
+    let price = document.createElement("p");
+    price.innerText = `Price : £ ${product.price}`;
+
+    orderInfo.appendChild(name);
+    orderInfo.appendChild(spec);
+    orderInfo.appendChild(cpu);
+    orderInfo.appendChild(ram);
+    orderInfo.appendChild(disk);
+    orderInfo.appendChild(price);
+
+
 }

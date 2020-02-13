@@ -63,6 +63,21 @@ type CheckoutData struct {
 	ClientSecret string `json:"clientecret"`
 }
 
+type OrderData struct {
+	PaymentID string `json="PaymentID"`
+	ProductID string `json="ProductID"`
+}
+
+type OrderObj struct {
+	OrderID string `json="order_id"`
+	ProdID  string `json="prod_id"`
+}
+
+type UserDetails struct {
+	Name  string `json="name"`
+	Email string `json="email"`
+}
+
 var db *sql.DB
 var err error
 
@@ -103,9 +118,12 @@ func main() {
 	r.HandleFunc("/signup", signup).Methods("POST", "OPTIONS")
 	r.HandleFunc("/signin", signin).Methods("POST", "OPTIONS")
 	r.HandleFunc("/account", account).Methods("GET")
+	r.HandleFunc("/acountInfo", accountInfo).Methods("GET")
 	r.HandleFunc("/create-payment-intent/{prodID}", createPaymentIntent).Methods("GET")
 	r.HandleFunc("/loggedIn", isLoggedIn).Methods("GET")
 	r.HandleFunc("/refresh", Refresh).Methods("GET")
+	r.HandleFunc("/order", Order).Methods("POST", "OPTIONS")
+	r.HandleFunc("/order", GetOrders).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(header, methods, origin, creds)(r)))
 
@@ -139,6 +157,36 @@ func generateUserID() string {
 	}
 
 	return userID
+}
+
+func generateOrderID() string {
+
+	id := ksuid.New()
+	orderID := "order_" + id.String()
+
+	println(orderID)
+
+	result, err := db.Query("SELECT order_id from orders WHERE order_id=(?)", orderID)
+	if err != nil {
+		println(err)
+	}
+
+	defer result.Close()
+
+	for result.Next() {
+		var orderid string
+		err := result.Scan(&orderid)
+		if err != nil {
+			panic(err)
+		}
+		if orderid != "" {
+			// make new user id
+			println(orderid, "already exists")
+			generateOrderID()
+		}
+	}
+
+	return orderID
 }
 
 func checkifemailexists(email string) bool {
@@ -288,6 +336,8 @@ func signup(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(signup)
 
+	// check signup details
+	// https://github.com/go-ozzo/ozzo-validation
 	// check that email doesn't already exit.
 
 	emailInDB := checkifemailexists(signup.Email)
@@ -296,8 +346,6 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(res)
 		return
 	}
-
-	println("check if email exits and if it does this line should appear")
 
 	password := []byte(signup.Password)
 
@@ -374,6 +422,14 @@ func signin(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(signin)
 
+	// basic logging cred checking
+	if signin.Email == "" || signin.Password == "" {
+		log.Println("No email")
+		res := resObj{false, "Problem signing in"}
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
 	// check password.
 
 	result, err := db.Query("SELECT user_id,password from users WHERE email=(?)", signin.Email)
@@ -419,12 +475,14 @@ func signin(w http.ResponseWriter, r *http.Request) {
 			})
 
 			res := resObj{true, "Details inserted into DB"}
-
 			json.NewEncoder(w).Encode(res)
-
 		}
 		fmt.Println(err) // nil means it is a match
+		return
 	}
+
+	res := resObj{false, "Something went wrong"}
+	json.NewEncoder(w).Encode(res)
 
 }
 
@@ -468,8 +526,6 @@ func account(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Finally, return the welcome message to the user, along with their
-	// username given in the token
 	res := resObj{true, claims.UserID}
 
 	json.NewEncoder(w).Encode(res)
@@ -633,4 +689,192 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		Value:   tokenString,
 		Expires: expirationTime,
 	})
+}
+
+// Order will add a new order to DB
+func Order(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method == http.MethodOptions {
+		return
+	}
+
+	c, err := r.Cookie("token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	tknStr := c.Value
+
+	claims := &Claims{}
+
+	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if !tkn.Valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	order := OrderData{}
+
+	jsn, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("Error wilst reading r body", err)
+	}
+
+	err = json.Unmarshal(jsn, &order)
+	if err != nil {
+		log.Fatal("Error wilst unmarshaling json", err)
+	}
+
+	OrderID := generateOrderID()
+
+	println(OrderID, "seletced")
+
+	result, err := db.Query("INSERT INTO orders (order_id, user_id, payment_id, prod_id) VALUES (?,?,?,?)", OrderID, claims.UserID, order.PaymentID, order.ProductID)
+	if err != nil {
+		log.Fatal("Error wilst inserting into DB", err)
+	}
+
+	defer result.Close()
+
+	fmt.Println("Inserted Into DB")
+
+	res := resObj{true, "Details inserted into DB"}
+
+	json.NewEncoder(w).Encode(res)
+
+}
+
+// GetOrders will return a list of orders for an account
+func GetOrders(w http.ResponseWriter, r *http.Request) {
+	c, err := r.Cookie("token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	tknStr := c.Value
+
+	claims := &Claims{}
+
+	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if !tkn.Valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	result, err := db.Query("SELECT order_id, prod_id from orders WHERE user_id=(?)", claims.UserID)
+	if err != nil {
+		println(err)
+	}
+
+	var allorders []OrderObj
+
+	for result.Next() {
+		var order OrderObj
+		err := result.Scan(&order.OrderID, &order.ProdID)
+		if err != nil {
+			panic(err.Error())
+		}
+		allorders = append(allorders, order)
+	}
+
+	println(len(allorders))
+
+	if len(allorders) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		res := resObj{false, "No orders found if you think this is wrong please contact us"}
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	fmt.Println(allorders)
+	json.NewEncoder(w).Encode(allorders)
+}
+
+func accountInfo(w http.ResponseWriter, r *http.Request) {
+	c, err := r.Cookie("token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	tknStr := c.Value
+
+	claims := &Claims{}
+
+	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if !tkn.Valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	result, err := db.Query("SELECT name, email from users WHERE user_id=(?)", claims.UserID)
+	if err != nil {
+		println(err)
+	}
+
+	var userDetailsList []UserDetails
+
+	for result.Next() {
+		var user UserDetails
+		err := result.Scan(&user.Name, &user.Email)
+		if err != nil {
+			panic(err.Error())
+		}
+		userDetailsList = append(userDetailsList, user)
+	}
+
+	println(len(userDetailsList))
+
+	if len(userDetailsList) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		res := resObj{false, "No orders found if you think this is wrong please contact us"}
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+
+	fmt.Println(userDetailsList)
+	json.NewEncoder(w).Encode(userDetailsList)
+
 }

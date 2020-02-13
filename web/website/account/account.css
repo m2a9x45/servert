@@ -40,3 +40,8 @@ nav ul li:first-child {
 #navbarItem a:hover, #logo a:hover {
     color: #2a64b8;
 }
+
+.content {
+    width: 60%;
+    margin: 5% auto;
+}

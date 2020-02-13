@@ -1,7 +1,8 @@
 
 const productsList = document.querySelector('.products');
+const LoginButton = document.querySelector('#Login');
+const SignupButton = document.querySelector('#Signup');
 const URL_API = "http://127.0.0.1:8000";
-
 
 refershToken();
 
@@ -20,6 +21,33 @@ function addProducts(products){
         addProductToPage(product);
     });
 }
+
+fetch(`${URL_API}/loggedIn`, {
+    method: 'get',
+    credentials: 'include',
+    headers: {
+        "Content-type": "application/json",
+    }
+})
+.then(response => {
+    console.log(response.status);
+    return response.json();
+})
+.then (data => {
+    console.log(data);
+    if (data.success == true) {
+        LoginButton.innerText = "Account"
+        LoginButton.href = "./account"
+        SignupButton.style.display = "none"
+    } else {
+        LoginButton.innerText = "Login"
+        LoginButton.href = "./signin/"
+        SignupButton.style.display = "block"
+    }
+})
+.catch(function (error) {
+    console.log('Request failed', error);
+});
 
 
 function addProductToPage(product){
@@ -45,7 +73,12 @@ function addProductToPage(product){
 
     let productprice = document.createElement('h5');
     productprice.setAttribute("id", "productprice");
-    productprice.innerText = `£ ${product.price}`;
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'GBP',
+      });
+    let price = formatter.format(product.price);
+    productprice.innerText = price;
 
     let addProduct = document.createElement('button');
     addProduct.setAttribute("id", "addProduct");
@@ -92,6 +125,5 @@ function refershToken() {
     .then (data => console.log(data))
     .catch(function (error) {
         console.log('Request failed', error);
-        console.log(response.status); 
     });
 }
