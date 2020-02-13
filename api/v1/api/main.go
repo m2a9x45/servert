@@ -390,9 +390,10 @@ func signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:    "token",
-		Value:   tokenString,
-		Expires: expirationTime,
+		Name:     "token",
+		Value:    tokenString,
+		Expires:  expirationTime,
+		HttpOnly: true,
 	})
 
 	res := resObj{true, "Details inserted into DB"}
@@ -469,9 +470,10 @@ func signin(w http.ResponseWriter, r *http.Request) {
 			}
 
 			http.SetCookie(w, &http.Cookie{
-				Name:    "token",
-				Value:   tokenString,
-				Expires: expirationTime,
+				Name:     "token",
+				Value:    tokenString,
+				Expires:  expirationTime,
+				HttpOnly: true,
 			})
 
 			res := resObj{true, "Details inserted into DB"}
@@ -685,9 +687,10 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 
 	// Set the new token as the users `token` cookie
 	http.SetCookie(w, &http.Cookie{
-		Name:    "token",
-		Value:   tokenString,
-		Expires: expirationTime,
+		Name:     "token",
+		Value:    tokenString,
+		Expires:  expirationTime,
+		HttpOnly: true,
 	})
 }
 
