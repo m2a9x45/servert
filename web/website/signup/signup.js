@@ -9,33 +9,51 @@ const URL_API = "http://127.0.0.1:8000";
 
 submitButton.addEventListener("click", () => {
     event.preventDefault()
-    console.log("clciekd");
-    
-    if (cust18.checked == true && custName.value != "" && custEmail.value != "" && custPass.value != "") {
-        console.log("data ready");  
+    if (custName.value != "") {
+        if (custEmail.value != "" && validateEmail(custEmail.value)) {
+            if (custPass.value != "") {
+                if (cust18.checked == true) {
+                    let formData = {
+                        "name" : custName.value,
+                        "email" : custEmail.value,
+                        "password" : custPass.value
+                    }
+                    console.log(formData);
+
+                    fetch(`${URL_API}/signup`, {
+                        method: 'post',
+                        credentials: 'include',
+                        headers: {
+                            "Content-type": "application/json",
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(response => response.json())
+                    .then((data) => console.log(data))
+                    .catch(function (error) {
+                        console.log('Request failed', error);
+                    });
+
+                } else {
+                    console.log("You must be a least 18 to use our services");  
+                }
+            } else {
+                console.log("You must choose a password"); 
+            }
+        } else {
+            console.log("You must enter your email");  
+        }
     } else {
-        console.log("data not ready");  
-        // show error
+        console.log("You must enter your name");
     }
-
-    let formData = {
-        "name" : custName.value,
-        "email" : custEmail.value,
-        "password" : custPass.value
-    }
-
-    fetch(`${URL_API}/signup`, {
-        method: 'post',
-        credentials: 'include',
-        headers: {
-            "Content-type": "application/json",
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => response.json())
-    .then((data) => console.log(data))
-    .catch(function (error) {
-        console.log('Request failed', error);
-    });
-
 });
+
+function showError(err){
+
+}
+
+function validateEmail(email) 
+{
+    var re = /\S+@\S+\.\S+/;
+    return re.test(email);
+}
