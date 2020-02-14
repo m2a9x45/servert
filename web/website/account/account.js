@@ -5,7 +5,7 @@ const URL_API = "http://127.0.0.1:8000";
 
 refershToken();
 
-fetch(`${URL_API}/loggedIn`, {
+fetch(`${URL_API}/isloggedin`, {
     method: 'get',
     credentials: 'include',
     headers: {
@@ -25,7 +25,7 @@ fetch(`${URL_API}/loggedIn`, {
     console.log(response.status); 
 });
 
-fetch(`${URL_API}/acountInfo`, {
+fetch(`${URL_API}/acountinfo`, {
     method: 'get',
     credentials: 'include',
     headers: {
@@ -49,7 +49,7 @@ fetch(`${URL_API}/acountInfo`, {
     console.log(response.status); 
 });
 
-fetch(`${URL_API}/order`, {
+fetch(`${URL_API}/getorders`, {
     method: 'get',
     credentials: 'include',
     headers: {
@@ -93,7 +93,7 @@ function refershToken() {
 }
 
 function getProducts(productID) {
-    fetch(`http://localhost:8000/products/${productID}`)
+    fetch(`${URL_API}/products/${productID}`)
     .then(res => {
         console.log(res.status); // Will show you the status
         if (!res.ok) {

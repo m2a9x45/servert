@@ -18,7 +18,7 @@ window.addEventListener("load", () => {
 
     // is user logged in
 
-    fetch(`${URL_API}/loggedIn`, {
+    fetch(`${URL_API}/isloggedin`, {
         method: 'get',
         credentials: 'include',
         headers: {
@@ -44,7 +44,7 @@ window.addEventListener("load", () => {
 
     refershToken()
 
-    fetch(`http://localhost:8000/products/${c}`)
+    fetch(`${URL_API}/products/${c}`)
     .then(res => {
         console.log(res.status); // Will show you the status
         if (!res.ok) {
@@ -93,7 +93,7 @@ function addProdToPage(product) {
     var stripe = Stripe('pk_test_ERYWSEs8exlFbm3glnzDeiga00VmESFxNg');
     var elements = stripe.elements();
     
-    var response = fetch(`http://localhost:8000/create-payment-intent/${c}`).then(function(response) {
+    var response = fetch(`${URL_API}/create-payment-intent/${c}`).then(function(response) {
         return response.json();
     }).then(function(responseJson) {
         var clientSecret = responseJson.clientecret;
@@ -180,7 +180,7 @@ function createOrder(payID, prodID) {
     console.log(formData);
     
 
-    fetch(`${URL_API}/order`, {
+    fetch(`${URL_API}/makeorder`, {
         method: 'post',
         credentials: 'include',
         headers: {

@@ -104,7 +104,7 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Order(w http.ResponseWriter, r *http.Request) {
+func MakeOrder(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodOptions {
 		return
