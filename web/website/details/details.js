@@ -18,7 +18,7 @@ window.addEventListener("load", () => {
 
     // is user logged in
 
-    fetch(`${URL_API}/isloggedin`, {
+    fetch(`${URL_API}/auth/isloggedin`, {
         method: 'get',
         credentials: 'include',
         headers: {
@@ -155,7 +155,7 @@ setInterval(function() {
 
 
 function refershToken() {
-    fetch(`${URL_API}/refresh`, {
+    fetch(`${URL_API}/auth/refresh`, {
         method: 'get',
         credentials: 'include',
         headers: {

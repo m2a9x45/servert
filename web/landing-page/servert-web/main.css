@@ -5,20 +5,26 @@ body {
 }
 
 header {
-    margin-top: 2%;
+    margin-top: 1%;
     text-align: center;
     font-weight: 200;
-    font-size: 24pt;
+    font-size: 28pt;
 }
 
 header h2 {
-    font-size: 18pt;
+    font-size: 24pt;
+    font-weight: 200;
+    margin: 0px;
 }
 
 main {
-    width: 60%;
-    margin: 4% auto;
-    font-size: 14pt;
+    width: 50%;
+    margin: 2% auto;
+    font-size: 16pt;
+}
+
+main h4 {
+    font-weight: 400;
 }
 
 footer {
@@ -26,9 +32,23 @@ footer {
     left: 0;
     bottom: 0;
     width: 100%;
-    background-color: rgb(121, 121, 121);
+    background-color: #0e1c31;
     color: white;
     text-align: center;
+}
+
+footer p {
+    display: inline-block;
+}
+
+form {
+    max-width: 60%;
+    margin: 0 auto;
+}
+
+.title {
+    margin: 0px;
+    font-weight: 300;
 }
 
 #custName {
@@ -46,7 +66,9 @@ footer {
 }
 
 #submitButton {
-    background-color: #4CAF50; /* Green */
+    margin-top: 2%;
+    background-color: #4CAF50;
+    /* Green */
     border: none;
     color: white;
     padding: 15px 32px;
@@ -54,9 +76,107 @@ footer {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
+    width: 100%;
 }
 
 #submitButton:hover {
-    background-color: rgb(52, 224, 58); /* Green */
+    background-color: rgb(52, 224, 58);
+    /* Green */
     color: white;
+}
+
+.error {
+    text-align: center;
+    width: 60%;
+    margin: 2% auto;
+}
+
+
+.w3-modal {
+    z-index: 3;
+    display: none;
+    padding-top: 100px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4)
+}
+
+.w3-modal-content {
+    margin: auto;
+    background-color: #fff;
+    position: relative;
+    padding: 0;
+    outline: 0;
+    width: 80%
+}
+
+.w3-container {
+    margin: 2% auto;
+    width: 80%;
+    padding: 2% 10%;
+}
+
+#popupTitle {
+    text-align: center;
+}
+
+.buttonDiv{
+    margin: 1% auto;
+    width: 85%;
+}
+
+#closeButton{
+    background-color: #4CAF50;
+    border-radius: 5px;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14pt;  
+    width: 100%;
+}
+
+#closeButton:hover{
+    background-color: rgb(52, 224, 58);
+    /* Green */
+    color: white;
+}
+
+@media only screen and (max-width: 600px) {
+    main {
+        width: 95%;
+        font-size: 14pt;
+    }
+    header {
+        margin: 0px;
+        font-size: 18pt;
+    }
+    header h2 {
+        font-size: 16pt;
+    }
+    .title {
+        margin: 0px;
+    }
+    #submitButton {
+        width: 100%;
+    }
+    footer {
+        padding: 2%;
+    }
+    footer p{
+        margin: 2%;
+    }
+}
+
+@media only screen and (max-width: 1200px) {
+    form {
+        max-width: 100%;
+    }
 }

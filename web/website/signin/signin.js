@@ -21,7 +21,7 @@ submitButton.addEventListener("click", () => {
         "password" : custPass.value
     }
 
-    fetch(`${URL_API}/signin`, {
+    fetch(`${URL_API}/auth/signin`, {
         method: 'post',
         credentials: 'include',
         headers: {

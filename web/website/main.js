@@ -22,7 +22,7 @@ function addProducts(products){
     });
 }
 
-fetch(`${URL_API}/isloggedin`, {
+fetch(`${URL_API}/auth/isloggedin`, {
     method: 'get',
     credentials: 'include',
     headers: {

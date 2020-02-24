@@ -47,15 +47,17 @@ func main() {
 	creds := handlers.AllowCredentials()
 
 	// auth.go
-	r.HandleFunc("/isloggedin", routes.IsLoggedIn).Methods("GET")
+	auth := r.PathPrefix("/auth").Subrouter()
+	auth.HandleFunc("/isloggedin", routes.IsLoggedIn).Methods("GET")
 	r.HandleFunc("/signup", routes.Signup).Methods("POST", "OPTIONS")
-	r.HandleFunc("/signin", routes.Signin).Methods("POST", "OPTIONS")
+	auth.HandleFunc("/signin", routes.Signin).Methods("POST", "OPTIONS")
 	r.HandleFunc("/refresh", routes.Refresh).Methods("GET")
 
 	//account.go
-	r.HandleFunc("/intrest", routes.Intrest).Methods("POST", "OPTIONS")
-	r.HandleFunc("/account", routes.Account).Methods("GET")
-	r.HandleFunc("/acountinfo", routes.AccountInfo).Methods("GET")
+	account := r.PathPrefix("/account").Subrouter()
+	account.HandleFunc("/intrest", routes.Intrest).Methods("POST", "OPTIONS")
+	account.HandleFunc("/account", routes.Account).Methods("GET")
+	account.HandleFunc("/accountinfo", routes.AccountInfo).Methods("GET")
 
 	//products.go
 	r.HandleFunc("/products/{prodID}", routes.GetProducts).Methods("GET")

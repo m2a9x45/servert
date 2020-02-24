@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,38 +10,71 @@
     <link rel="stylesheet" href="main.css">
     <title>Servert</title>
 </head>
+
 <body>
     <header>
-        <h1>
+        <h1 class="title">
             Servert
         </h1>
         <h2>
             Servers done simply.
         </h2>
     </header>
-   <main>
-    <p>
-        We're building a server renting company to make getting online easier. We're offering a wide range of options from Virtual
-        Private Server (VPS) renting, website hosting and game server renting. We'll be adding more to this site soon. But for
-        now you can contact us <a href="mailto:help@servert.co.uk" target="_top">here.</a>
-    </p>
+    <main>
+        <p id="des">
+            We're building a server renting company to make getting online easier. We're offering a wide range of
+            options from Virtual
+            Private Server (VPS) renting, website hosting and game server renting. We'll be adding more to this site
+            soon. But for
+            now you can contact us <a href="mailto:help@servert.co.uk" target="_top">here.</a>
+        </p>
 
-    <h4>
-        Let us know if you'd like to join us :
-    </h4>
-    <form>
-        <label for="custName">Your name</label>
-        <input id="custName" name="custName" type="text" placeholder="Jane Doe">
+        <h4>
+            Let us know if you'd like to sign up to our mailing list :
+        </h4>
+        <form>
+            <label for="custName">Your name :</label>
+            <input id="custName" name="custName" type="text" placeholder="Jane Doe">
 
-        <label for="custEmail">Email address</label>
-        <input id="custEmail" type="email" name="custEmail" placeholder="jane@example.com">
+            <label for="custEmail">Email address :</label>
+            <input id="custEmail" type="email" name="custEmail" placeholder="jane@example.com">
 
-        <button id="submitButton" type="submit">Send</button>
-    </form>
-   </main>
-   <footer>
-        <p>Servert Limited is a company registered in Scotland (No. 652059).</p>
-   </footer>
+            <button id="submitButton" type="submit">Send</button>
+        </form>
+
+        <div class="error">
+            <p id="errorMessage"></p>
+        </div>
+
+        <div id="id01" class="w3-modal">
+            <div class="w3-modal-content">
+                <div class="w3-container">
+                    <h2 id="popupTitle">Thanks for letting us know 💓</h2>
+                    <h3 id="heyName">Hey test</h3>
+                    <p>
+                        Thanks for letting us know that you might be intrested in renting a server from us.
+                        We're still in the early stages or getting things off the ground. But as soon as we're ready we'll
+                        let you know with an email 📧🚀
+                    </p>
+                    <div class="buttonDiv">
+                        <button id="closeButton" >close</button>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+
+        <br>
+        <br>
+        <br>
+    </main>
+
+    <footer>
+        <p>Servert Limited is a company registered in Scotland (No. SC652059). </p>
+        <a href="./PrivacyNotice">Our Privacy Notice</a>
+    </footer>
     <script src="main.js"></script>
 </body>
+
 </html>

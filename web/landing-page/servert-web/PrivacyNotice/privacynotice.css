@@ -1,0 +1,57 @@
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f8f8f8;
+}
+
+main {
+    width: 50%;
+    margin: 2% auto;
+    font-size: 14pt;
+}
+
+header {
+    background-color: #0e1c31;
+    padding: 1em;
+}
+
+.navbar {
+    margin: 0 auto;
+    width: 50%;
+}
+
+.navbarList {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+#navbarItem {
+    display: inline-block;
+    list-style-type: none;
+    font-family: 'Roboto', sans-serif; 
+    font-size: 14pt;
+    padding-left: 1rem;
+}
+
+nav ul li:first-child {
+    margin-right: auto;
+}
+
+#navbarItem a, #logo a {
+    text-decoration: none;
+    color: #f2f2f2;
+}
+
+#navbarItem a:hover, #logo a:hover {
+    color: #2a64b8;
+}
+
+@media only screen and (max-width: 600px) {
+    main {
+      width: 90%;
+    }
+    .navbar {
+        width: 100%;
+    }
+  }

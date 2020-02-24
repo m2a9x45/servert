@@ -5,7 +5,7 @@ const URL_API = "http://127.0.0.1:8000";
 
 refershToken();
 
-fetch(`${URL_API}/isloggedin`, {
+fetch(`${URL_API}/auth/isloggedin`, {
     method: 'get',
     credentials: 'include',
     headers: {
@@ -25,7 +25,7 @@ fetch(`${URL_API}/isloggedin`, {
     console.log(response.status); 
 });
 
-fetch(`${URL_API}/acountinfo`, {
+fetch(`${URL_API}/account/accountinfo`, {
     method: 'get',
     credentials: 'include',
     headers: {
