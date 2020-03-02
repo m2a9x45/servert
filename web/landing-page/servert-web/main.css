@@ -46,6 +46,10 @@ form {
     margin: 0 auto;
 }
 
+a {
+    color: #4CAF50;
+}
+
 .title {
     margin: 0px;
     font-weight: 300;

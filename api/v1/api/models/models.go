@@ -55,3 +55,7 @@ type UserDetails struct {
 	Name  string `json="name"`
 	Email string `json="email"`
 }
+
+type Hello struct {
+	Name string `json="name"`
+}

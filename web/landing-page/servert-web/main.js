@@ -6,6 +6,7 @@ const heyName = document.getElementById("heyName");
 const closeButton = document.getElementById("closeButton");
 const errorMessage = document.querySelector("#errorMessage");
 
+// const URL_API = "https://api.servert.co.uk";
 const URL_API = "http://localhost:8000";
 
 closeButton.addEventListener("click", () => {
@@ -49,6 +50,7 @@ submitButton.addEventListener("click", () => {
                 })
                 .catch(function (error) {
                     console.log('Request failed', error);
+                    showError("Something went wrong please try again later");
                 });
 
         } else {
