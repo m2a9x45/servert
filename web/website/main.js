@@ -114,7 +114,7 @@ setInterval(function() {
 
 
 function refershToken() {
-    fetch(`${URL_API}/refresh`, {
+    fetch(`${URL_API}/auth/refresh`, {
         method: 'get',
         credentials: 'include',
         headers: {

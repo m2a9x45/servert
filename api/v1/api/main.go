@@ -54,9 +54,9 @@ func main() {
 	// auth.go
 	auth := r.PathPrefix("/auth").Subrouter()
 	auth.HandleFunc("/isloggedin", routes.IsLoggedIn).Methods("GET")
-	r.HandleFunc("/signup", routes.Signup).Methods("POST", "OPTIONS")
+	auth.HandleFunc("/signup", routes.Signup).Methods("POST", "OPTIONS")
 	auth.HandleFunc("/signin", routes.Signin).Methods("POST", "OPTIONS")
-	r.HandleFunc("/refresh", routes.Refresh).Methods("GET")
+	auth.HandleFunc("/refresh", routes.Refresh).Methods("GET")
 	auth.HandleFunc("/reset", routes.Reset).Methods("POST", "OPTIONS")
 	auth.HandleFunc("/restpassword", routes.UpdatePasswordFromReset).Methods("PATCH", "OPTIONS")
 

@@ -2,7 +2,6 @@ package routes
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"../database"
@@ -44,7 +43,7 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(res)
 		}
 
-		fmt.Println(allproducts)
+		// fmt.Println(allproducts)
 		json.NewEncoder(w).Encode(allproducts)
 		return
 	}
@@ -69,6 +68,6 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 		allproducts = append(allproducts, product)
 	}
 
-	fmt.Println(allproducts)
+	// fmt.Println(allproducts)
 	json.NewEncoder(w).Encode(allproducts)
 }

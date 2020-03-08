@@ -20,7 +20,7 @@ submitButton.addEventListener("click", () => {
                     }
                     console.log(formData);
 
-                    fetch(`${URL_API}/signup`, {
+                    fetch(`${URL_API}/auth/signup`, {
                         method: 'post',
                         credentials: 'include',
                         headers: {
