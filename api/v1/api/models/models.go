@@ -59,3 +59,17 @@ type UserDetails struct {
 type Hello struct {
 	Name string `json="name"`
 }
+
+type Reset struct {
+	Email string `json="email"`
+}
+
+type ResetPassword struct {
+	Password string `json:"password"`
+	Token    string `json:"token"`
+}
+
+type ResetPasswordDB struct {
+	Email   string `json="email"`
+	Expires int64  `json="expires"`
+}
