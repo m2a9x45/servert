@@ -164,7 +164,7 @@ func MakeOrder(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Inserted Into DB")
 
-	res := models.ResObj{Success: true, Message: "Details inserted into DB"}
+	res := models.ResObj{Success: true, Message: OrderID}
 
 	json.NewEncoder(w).Encode(res)
 

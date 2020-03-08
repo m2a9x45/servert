@@ -189,7 +189,10 @@ function createOrder(payID, prodID) {
         body: JSON.stringify(formData)
     })
     .then(response => response.json())
-    .then((data) => console.log(data))
+    .then((data) => {
+        console.log(data);
+        window.location = `../receipts/index.html?=${data.message}`;
+    })
     .catch(function (error) {
         console.log('Request failed', error);
     });

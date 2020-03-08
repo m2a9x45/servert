@@ -290,6 +290,7 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 		Value:    tokenString,
 		Expires:  expirationTime,
 		HttpOnly: true,
+		Path:     "/",
 	})
 }
 
