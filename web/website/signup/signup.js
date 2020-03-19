@@ -29,7 +29,10 @@ submitButton.addEventListener("click", () => {
                         body: JSON.stringify(formData)
                     })
                     .then(response => response.json())
-                    .then((data) => console.log(data))
+                    .then((data) => {
+                        console.log(data);
+                        window.location = "../"
+                    })
                     .catch(function (error) {
                         console.log('Request failed', error);
                     });
@@ -47,10 +50,6 @@ submitButton.addEventListener("click", () => {
         console.log("You must enter your name");
     }
 });
-
-function showError(err){
-
-}
 
 function validateEmail(email) 
 {

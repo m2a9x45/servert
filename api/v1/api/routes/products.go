@@ -41,6 +41,7 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 			res := models.ResObj{Success: false, Message: "product not found"}
 			json.NewEncoder(w).Encode(res)
+			return
 		}
 
 		// fmt.Println(allproducts)

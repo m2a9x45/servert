@@ -144,7 +144,7 @@ form.addEventListener('submit', function(ev) {
             console.log(result);
 
             // add order to DB
-            createOrder(result.paymentIntent.id, productID);
+            createOrder(result.paymentIntent.id, productID, result.paymentIntent.created);
         }}
 });
 });
@@ -170,11 +170,12 @@ function refershToken() {
     });
 }
 
-function createOrder(payID, prodID) {
+function createOrder(payID, prodID, time) {
 
     let formData = {
         "PaymentID" : payID,
-        "ProductID" : prodID
+        "ProductID" : prodID,
+        "Time" : time
     }
 
     console.log(formData);
@@ -191,7 +192,7 @@ function createOrder(payID, prodID) {
     .then(response => response.json())
     .then((data) => {
         console.log(data);
-        window.location = `../receipts/index.html?=${data.message}`;
+        window.location = `../receipts/index.html?id=${data.message}`;
     })
     .catch(function (error) {
         console.log('Request failed', error);

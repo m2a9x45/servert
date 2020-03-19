@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,22 +9,54 @@
     <link rel="stylesheet" href="receipts.css">
     <title>servert - recipts</title>
 </head>
+
 <body>
     <header>
         <nav class="navbar">
             <ul class="navbarList">
-                <li id="navbarItem"><a href="../" >Servert</a></li>
+                <li id="navbarItem"><a href="../">Servert</a></li>
                 <li id="navbarItem"><a id="Login" href="../signin/">Login</a></li>
             </ul>
         </nav>
     </header>
     <main>
-        <h2>
-            Your recipt
-        </h2>
+        <h2>Your recipt</h2>
+        <p id="orderID"></p>
+
+        <table id="table" style="width:100%">
+            <!-- <tr>
+                <td>VPS 4</td>
+                <td>1 month</td>
+            </tr>
+            <tr>
+                <td>Cpu</td>
+                <td>1 core</td>
+            </tr>
+            <tr>
+                <td>Ram</td>
+                <td>2 GB</td>
+            </tr>
+            <tr>
+                <td>Disk</td>
+                <td>100 GB</td>
+            </tr>
+            <tr>
+                <td>Total</td>
+                <td>£ 9.40</td>
+            </tr> -->
+        </table>
+
+        <p id="payID"></p>
+        <p id="dateOfPur">Date of purchase : 19/03/2020 14:32</p>
+
+        <p id="contact">
+            To get in touch you can send us an email at <a href="mailto:help@servert.co.uk">help@servert.co.uk</a>
+        </p>
+
     </main>
-    
+
 
     <script src="receipts.js"></script>
 </body>
+
 </html>

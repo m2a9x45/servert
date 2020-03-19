@@ -155,7 +155,7 @@ func MakeOrder(w http.ResponseWriter, r *http.Request) {
 
 	println(OrderID, "seletced")
 
-	result, err := database.DBCon.Query("INSERT INTO orders (order_id, user_id, payment_id, prod_id) VALUES (?,?,?,?)", OrderID, claims.UserID, order.PaymentID, order.ProductID)
+	result, err := database.DBCon.Query("INSERT INTO orders (order_id, user_id, payment_id, prod_id, created_at) VALUES (?,?,?,?,?)", OrderID, claims.UserID, order.PaymentID, order.ProductID, order.Time)
 	if err != nil {
 		log.Fatal("Error wilst inserting into DB", err)
 	}

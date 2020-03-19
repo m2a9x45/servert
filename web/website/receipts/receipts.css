@@ -1,12 +1,16 @@
 body {
     margin: 0px;
     background-color: #fafafa;
-    font-family: 'Roboto', sans-serif; 
+    font-family: 'Roboto', sans-serif;
 }
 
 header {
     background-color: #0e1c31;
     padding: 1em;
+}
+
+a {
+    color: #4CAF50;
 }
 
 .navbar {
@@ -23,7 +27,7 @@ header {
 #navbarItem {
     display: inline-block;
     list-style-type: none;
-    font-family: 'Roboto', sans-serif; 
+    font-family: 'Roboto', sans-serif;
     font-size: 14pt;
     padding-left: 1rem;
 }
@@ -32,17 +36,15 @@ nav ul li:first-child {
     margin-right: auto;
 }
 
-#navbarItem a, #logo a {
+#navbarItem a,
+#logo a {
     text-decoration: none;
     color: #f2f2f2;
 }
 
-#navbarItem a:hover, #logo a:hover {
+#navbarItem a:hover,
+#logo a:hover {
     color: #2a64b8;
-}
-
-header h2 {
-    font-size: 18pt;
 }
 
 main {
@@ -51,11 +53,30 @@ main {
     font-size: 14pt;
 }
 
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border-radius: 20px;
+}
 
+td,
+th {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+}
 
+#contact {
+    text-align: center;
+}
 
+@media only screen and (max-width: 500px) {
+    .navbar {
+        width: 100%;
+    }
 
-
-
-
-
+    main {
+        width: 90%;
+        margin: 2% auto;
+    }
+}

@@ -44,11 +44,27 @@ type CheckoutData struct {
 type OrderData struct {
 	PaymentID string `json="PaymentID"`
 	ProductID string `json="ProductID"`
+	Time      int    `json="time"`
 }
 
 type OrderObj struct {
 	OrderID string `json="order_id"`
 	ProdID  string `json="prod_id"`
+}
+
+type Order struct {
+	ID        string `json:"id"`
+	OrderID   string `json="order_id"`
+	UserID    string `json="userid"`
+	PaymentID string `json="PaymentID"`
+	ProdID    string `json="prod_id"`
+	Time      int    `json="createdAt"`
+}
+
+type Receipt struct {
+	Success bool    `json:"success"`
+	Order   Order   `json:"order"`
+	Product Product `json:"product"`
 }
 
 type UserDetails struct {
