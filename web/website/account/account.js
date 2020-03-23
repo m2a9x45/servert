@@ -61,7 +61,8 @@ fetch(`${URL_API}/getorders`, {
     console.log(data);
 
     for (let i = 0; i < data.length; i++) {
-        getProducts(data[i].ProdID);
+        // console.log(data[i].OrderID);
+        getProducts(data[i].ProdID, data[i].OrderID);
     }
 })
 .catch(function (error) {
@@ -69,16 +70,12 @@ fetch(`${URL_API}/getorders`, {
     console.log(response.status); 
 });
 
-
-
-
 setInterval(function() {
     refershToken();
 }, 60000); // Every 1 minitue
 
-
 function refershToken() {
-    fetch(`${URL_API}/refresh`, {
+    fetch(`${URL_API}/auth/refresh`, {
         method: 'get',
         credentials: 'include',
         headers: {
@@ -92,27 +89,29 @@ function refershToken() {
     });
 }
 
-function getProducts(productID) {
+function getProducts(productID, OrderID) {
     fetch(`${URL_API}/products/${productID}`)
     .then(res => {
-        console.log(res.status); // Will show you the status
+        // console.log(res.status); // Will show you the status
         if (!res.ok) {
-            console.log(res.status + " product not found");
-            
+            console.log(res.status + " product not found");  
         }
         return res.json();
     })
     .then(data => {
-        console.log(data);
+        // console.log(data);
         productID = data[0].uuid;
-        addProdToPage(data[0]);
+        addProdToPage(data[0], OrderID);
     })
     .catch(err => console.log(err))
 }
 
-function addProdToPage(product) {
+function addProdToPage(product, OrderID) {
+    let orderid = document.createElement("p");
+    orderid.innerText = `Order number : ${OrderID}`;
+
     let name = document.createElement("p");
-    name.innerText = product.name;
+    name.innerText = `Product name : ${product.name}`;
 
     let spec = document.createElement("h3");
     spec.innerText = "Specs"
@@ -127,8 +126,14 @@ function addProdToPage(product) {
     disk.innerText = `Disk space : ${product.disk} GB`;
 
     let price = document.createElement("p");
-    price.innerText = `Price : £ ${product.price}`;
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'GBP',
+      });
+    let priceFM = formatter.format(product.price);
+    price.innerText = `Price : ${priceFM}`;
 
+    orderInfo.appendChild(orderid);
     orderInfo.appendChild(name);
     orderInfo.appendChild(spec);
     orderInfo.appendChild(cpu);
