@@ -106,12 +106,18 @@ function getProducts(productID, OrderID) {
     .catch(err => console.log(err))
 }
 
+// http://127.0.0.1:8080/web/website/receipts/index.html?id=order_1ZMD18zw0NUulLXt2ftFpvT9QTl
+
 function addProdToPage(product, OrderID) {
-    let orderid = document.createElement("p");
-    orderid.innerText = `Order number : ${OrderID}`;
+    let orderidtitle = document.createElement("p");
+    orderidtitle.innerText = "Order ID : ";
+
+    let orderid = document.createElement("a");
+    orderid.innerText = `${OrderID}`;
+    orderid.href = `../receipts/index.html?id=${OrderID}`
 
     let name = document.createElement("p");
-    name.innerText = `Product name : ${product.name}`;
+    name.innerText = `Name : ${product.name}`;
 
     let spec = document.createElement("h3");
     spec.innerText = "Specs"
@@ -133,13 +139,21 @@ function addProdToPage(product, OrderID) {
     let priceFM = formatter.format(product.price);
     price.innerText = `Price : ${priceFM}`;
 
-    orderInfo.appendChild(orderid);
-    orderInfo.appendChild(name);
-    orderInfo.appendChild(spec);
-    orderInfo.appendChild(cpu);
-    orderInfo.appendChild(ram);
-    orderInfo.appendChild(disk);
-    orderInfo.appendChild(price);
+    const orderdiv = document.createElement("div");
+    orderdiv.className = "orderdiv";
+
+
+    orderidtitle.appendChild(orderid);
+
+    orderdiv.appendChild(name);
+    orderdiv.appendChild(orderidtitle);
+    orderdiv.appendChild(spec);
+    orderdiv.appendChild(cpu);
+    orderdiv.appendChild(ram);
+    orderdiv.appendChild(disk);
+    orderdiv.appendChild(price);
+
+    orderInfo.appendChild(orderdiv);
 
 
 }

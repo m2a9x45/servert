@@ -48,10 +48,29 @@ nav ul li:first-child {
 
 .content {
     margin: 5% auto;
-    width: 60%;
+    width: 75%;
 }
 
 #payment-form {
     margin: 10% auto;
     width: 80%;
 }
+
+.rentgroup {
+    display: flex;
+    justify-content: space-between;
+    /* align-items: center; */
+}
+
+.rentrange {
+    background-color: rgb(231, 231, 231); /* Green */
+    border: none;
+    color: black;
+    padding: 25px 36px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18pt;
+}
+
+/* .rentrange: */
