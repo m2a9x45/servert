@@ -48,7 +48,7 @@ nav ul li:first-child {
 
 .content {
     margin: 5% auto;
-    width: 75%;
+    width: 60%;
 }
 
 #payment-form {
@@ -63,14 +63,11 @@ nav ul li:first-child {
 }
 
 .rentrange {
-    background-color: rgb(231, 231, 231); /* Green */
-    border: none;
-    color: black;
+    border: 2px solid #0e1c31;;
+    border-radius: 5px;
     padding: 25px 36px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 18pt;
+    font-size: 14pt;
+    width: 22%;
 }
 
 /* .rentrange: */

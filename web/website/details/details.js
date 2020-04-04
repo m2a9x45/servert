@@ -1,4 +1,5 @@
 const orderInfo = document.querySelector(".orderInfo");
+const rentdurButtons = document.querySelectorAll(".rentrange");
 var form = document.getElementById('payment-form');
 let sercret = "";
 const URL_API = "http://127.0.0.1:8000";
@@ -13,6 +14,56 @@ let productID = "";
 if (c == "" || c == null) {
     window.location = "../"
 }
+
+console.log(rentdurButtons);
+
+rentdurButtons.forEach(button => {
+    button.addEventListener("click", (e) => {
+        // console.log(e);
+        if (e.target.className == "rentrange") {
+
+            rentdurButtons.forEach(element => {
+                element.style.borderColor = "#0e1c31";
+                element.style.backgroundColor = "#fafafa";
+                // e.target.style.opacity = 1;
+            });
+
+            e.srcElement.children[0].checked = true;
+            e.target.style.borderColor = "#2a4f87";
+            e.target.style.backgroundColor  = "#e6e6e6";
+            // e.target.style.opacity = 0.5;
+
+        } 
+        
+        if (e.target.tagName == "LABEL") {
+            
+            rentdurButtons.forEach(element => {
+                element.style.borderColor = "#0e1c31";
+                element.style.backgroundColor = "#fafafa";
+            });
+
+            e.srcElement.previousElementSibling.checked = true; 
+
+            e.srcElement.parentElement.style.borderColor = "#2a4f87";
+            e.srcElement.parentElement.style.backgroundColor  = "#e6e6e6";
+        } 
+
+        if (e.target.tagName == "INPUT") {
+
+            rentdurButtons.forEach(element => {
+                element.style.borderColor = "#0e1c31";
+                element.style.backgroundColor = "#fafafa";
+            });
+
+            e.target.checked = true; 
+
+            e.target.parentElement.style.borderColor = "#2a4f87";
+            e.target.parentElement.style.backgroundColor  = "#e6e6e6";
+        }
+        
+    })
+});
+
 
 window.addEventListener("load", () => {
 
@@ -90,64 +141,64 @@ function addProdToPage(product) {
 }
 
 
-    var stripe = Stripe('pk_test_ERYWSEs8exlFbm3glnzDeiga00VmESFxNg');
-    var elements = stripe.elements();
+//     var stripe = Stripe('pk_test_ERYWSEs8exlFbm3glnzDeiga00VmESFxNg');
+//     var elements = stripe.elements();
     
-    var response = fetch(`${URL_API}/create-payment-intent/${c}`).then(function(response) {
-        return response.json();
-    }).then(function(responseJson) {
-        var clientSecret = responseJson.clientecret;
-        sercret = clientSecret;
-    });
+//     var response = fetch(`${URL_API}/create-payment-intent/${c}`).then(function(response) {
+//         return response.json();
+//     }).then(function(responseJson) {
+//         var clientSecret = responseJson.clientecret;
+//         sercret = clientSecret;
+//     });
     
-    var style = {
-        base: {
-        color: "#32325d",
-        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-        fontSmoothing: "antialiased",
-        fontSize: "16px",
-        "::placeholder": {
-        color: "#aab7c4"
-        }
-    },
-    invalid: {
-        color: "#fa755a",
-        iconColor: "#fa755a"
-    }};
+//     var style = {
+//         base: {
+//         color: "#32325d",
+//         fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+//         fontSmoothing: "antialiased",
+//         fontSize: "16px",
+//         "::placeholder": {
+//         color: "#aab7c4"
+//         }
+//     },
+//     invalid: {
+//         color: "#fa755a",
+//         iconColor: "#fa755a"
+//     }};
     
-    var card = elements.create("card", { style: style });
-    card.mount("#card-element");
+//     var card = elements.create("card", { style: style });
+//     card.mount("#card-element");
     
-    card.addEventListener('change', ({error}) => {
-    const displayError = document.getElementById('card-errors');
-    if (error) {
-        displayError.textContent = error.message;
-    } else {
-        displayError.textContent = '';
-    }});
+//     card.addEventListener('change', ({error}) => {
+//     const displayError = document.getElementById('card-errors');
+//     if (error) {
+//         displayError.textContent = error.message;
+//     } else {
+//         displayError.textContent = '';
+//     }});
 
 
-form.addEventListener('submit', function(ev) {
-    ev.preventDefault();
-    stripe.confirmCardPayment(sercret, {
-        payment_method: {
-        card: card,
-        billing_details: {
-            name: 'Jenny Rosen'
-        }}
-    }).then(function(result) {
-        if (result.error) {
-            console.log(result.error.message);
-        } else {
-        if (result.paymentIntent.status === 'succeeded') {
-            console.log("payment made yaaaa");
-            console.log(result);
+// form.addEventListener('submit', function(ev) {
+//     ev.preventDefault();
+//     stripe.confirmCardPayment(sercret, {
+//         payment_method: {
+//         card: card,
+//         billing_details: {
+//             name: 'Jenny Rosen'
+//         }}
+//     }).then(function(result) {
+//         if (result.error) {
+//             console.log(result.error.message);
+//         } else {
+//         if (result.paymentIntent.status === 'succeeded') {
+//             console.log("payment made yaaaa");
+//             console.log(result);
 
-            // add order to DB
-            createOrder(result.paymentIntent.id, productID, result.paymentIntent.created);
-        }}
-});
-});
+//             // add order to DB
+//             createOrder(result.paymentIntent.id, productID, result.paymentIntent.created);
+//         }}
+// });
+// });
 
 setInterval(function() {
     refershToken();

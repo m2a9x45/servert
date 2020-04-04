@@ -27,14 +27,23 @@
 
             <h2>Rent duration : </h2>
             <div class="rentgroup">
-                <button class="rentrange" >1 month</button>
-                <button class="rentrange">3 months</button>
-                <button class="rentrange">6 months</button>
-                <button class="rentrange">9 months</button>
-                <button class="rentrange">12 months</button>
+                <div class="rentrange">
+                    <input type="radio" name="rent" value="1">
+                    <label for="male">1 Month</label>
+                </div>
+                <div class="rentrange">
+                    <input type="radio" name="rent" value="3">
+                    <label for="female">3 Months</label>
+                </div>
+                <div class="rentrange">
+                    <input type="radio" name="rent" value="6">
+                    <label for="other">6 Months</label>
+                </div>
+                <div class="rentrange">
+                    <input type="radio" name="rent" value="12">
+                    <label for="other">1 Year</label>
+                </div>      
             </div>
-            
-        
 
             <div class="orderInfo">
                 <h2>Order Info</h2>
@@ -60,6 +69,6 @@
     
     </script>
 
-    <!-- <script src="details.js"></script> -->
+    <script src="details.js"></script>
 </body>
 </html>
