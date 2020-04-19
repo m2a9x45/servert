@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 
 	"../database"
 	"../models"
@@ -50,6 +51,20 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	id := vars["prodID"]
+	dur := vars["dur"]
+
+	durI, err := strconv.Atoi(dur)
+	if err != nil {
+		panic(err)
+	}
+
+	println("Hi", dur)
+
+	if durI != 1 && durI != 3 && durI != 6 && durI != 12 {
+		res := models.ResObj{Success: false, Message: "You cannot rent the sever for that period of time"}
+		json.NewEncoder(w).Encode(res)
+		return
+	}
 
 	if id != "" {
 		var allproducts []models.Product
@@ -84,11 +99,13 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 
 		price := allproducts[0].Price
 		pricePennies := int64(price * 100)
+		chargePrice := pricePennies * int64(durI)
 		println(price, " in £")
-		println(price, " in p")
+		println(pricePennies, " in p")
+		println(chargePrice, "for", durI, "months")
 
 		params := &stripe.PaymentIntentParams{
-			Amount:   stripe.Int64(pricePennies),
+			Amount:   stripe.Int64(chargePrice),
 			Currency: stripe.String(string(stripe.CurrencyGBP)),
 		}
 
@@ -155,7 +172,15 @@ func MakeOrder(w http.ResponseWriter, r *http.Request) {
 
 	println(OrderID, "seletced")
 
-	result, err := database.DBCon.Query("INSERT INTO orders (order_id, user_id, payment_id, prod_id, created_at) VALUES (?,?,?,?,?)", OrderID, claims.UserID, order.PaymentID, order.ProductID, order.Time)
+	dur, err := strconv.Atoi(order.Dur)
+	if err != nil {
+		panic(err)
+	}
+
+	factor := dur * 2629743 // 2629743 number of seconds in a month
+	expires := order.Time + factor
+
+	result, err := database.DBCon.Query("INSERT INTO orders (order_id, user_id, payment_id, prod_id, created_at, duration, expires_at ) VALUES (?,?,?,?,?,?,?)", OrderID, claims.UserID, order.PaymentID, order.ProductID, order.Time, order.Dur, expires)
 	if err != nil {
 		log.Fatal("Error wilst inserting into DB", err)
 	}

@@ -257,7 +257,7 @@ func Getreceipt(w http.ResponseWriter, r *http.Request) {
 
 		for result.Next() {
 			var order models.Order
-			err := result.Scan(&order.ID, &order.OrderID, &order.UserID, &order.PaymentID, &order.ProdID, &order.Time)
+			err := result.Scan(&order.ID, &order.OrderID, &order.UserID, &order.PaymentID, &order.ProdID, &order.Time, &order.Dur, &order.Expires)
 			if err != nil {
 				panic(err.Error())
 			}

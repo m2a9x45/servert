@@ -1,8 +1,11 @@
+const form = document.getElementById('payment-form');
 const orderInfo = document.querySelector(".orderInfo");
 const rentdurButtons = document.querySelectorAll(".rentrange");
-var form = document.getElementById('payment-form');
-let sercret = "";
+const rent = document.getElementsByName("rent");
 const URL_API = "http://127.0.0.1:8000";
+
+
+let duration = "";
 
 var url_string = window.location.href;
 var url = new URL(url_string);
@@ -15,69 +18,17 @@ if (c == "" || c == null) {
     window.location = "../"
 }
 
-console.log(rentdurButtons);
-
-rentdurButtons.forEach(button => {
-    button.addEventListener("click", (e) => {
-        // console.log(e);
-        if (e.target.className == "rentrange") {
-
-            rentdurButtons.forEach(element => {
-                element.style.borderColor = "#0e1c31";
-                element.style.backgroundColor = "#fafafa";
-                // e.target.style.opacity = 1;
-            });
-
-            e.srcElement.children[0].checked = true;
-            e.target.style.borderColor = "#2a4f87";
-            e.target.style.backgroundColor  = "#e6e6e6";
-            // e.target.style.opacity = 0.5;
-
-        } 
-        
-        if (e.target.tagName == "LABEL") {
-            
-            rentdurButtons.forEach(element => {
-                element.style.borderColor = "#0e1c31";
-                element.style.backgroundColor = "#fafafa";
-            });
-
-            e.srcElement.previousElementSibling.checked = true; 
-
-            e.srcElement.parentElement.style.borderColor = "#2a4f87";
-            e.srcElement.parentElement.style.backgroundColor  = "#e6e6e6";
-        } 
-
-        if (e.target.tagName == "INPUT") {
-
-            rentdurButtons.forEach(element => {
-                element.style.borderColor = "#0e1c31";
-                element.style.backgroundColor = "#fafafa";
-            });
-
-            e.target.checked = true; 
-
-            e.target.parentElement.style.borderColor = "#2a4f87";
-            e.target.parentElement.style.backgroundColor  = "#e6e6e6";
-        }
-        
-    })
-});
-
-
 window.addEventListener("load", () => {
 
-    // is user logged in
-
     fetch(`${URL_API}/auth/isloggedin`, {
-        method: 'get',
-        credentials: 'include',
-        headers: {
-            "Content-type": "application/json",
-        }
-    })
-    .then(response => {
-        console.log(response.status); // Will show you the status
+            method: 'get',
+            credentials: 'include',
+            headers: {
+                "Content-type": "application/json",
+            }
+        })
+        .then(response => {
+            console.log(response.status); // Will show you the status
             if (!response.ok) {
                 if (confirm("You need to login")) {
                     window.location = "../signin";
@@ -86,37 +37,135 @@ window.addEventListener("load", () => {
                 }
             }
             return response.json();
-    })
-    .then (data => console.log(data))
-    .catch(function (error) {
-        console.log('Request failed', error);
-        console.log(response.status); 
-    });
+        })
+        .then(data => console.log(data))
+        .catch(function (error) {
+            console.log('Request failed', error);
+            console.log(response.status);
+        });
 
     refershToken()
 
     fetch(`${URL_API}/products/${c}`)
-    .then(res => {
-        console.log(res.status); // Will show you the status
-        if (!res.ok) {
-            window.location = "../"
+        .then(res => {
+            console.log(res.status); // Will show you the status
+            if (!res.ok) {
+                window.location = "../"
+            }
+            return res.json();
+        })
+        .then(data => {
+            console.log(data);
+            productID = data[0];
+            addProdToPage(data[0]);            
+        })
+        .catch(err => console.log(err))
+
+    rentdurButtons.forEach(button => {
+        button.addEventListener("click", (e) => {
+            // console.log(e);
+            if (e.target.className == "rentrange") {
+
+                rentdurButtons.forEach(element => {
+                    element.style.borderColor = "#0e1c31";
+                    element.style.backgroundColor = "#fafafa";
+                    // e.target.style.opacity = 1;
+                });
+
+                e.srcElement.children[0].checked = true;
+                e.target.style.borderColor = "#2a4f87";
+                e.target.style.backgroundColor = "#e6e6e6";
+                // e.target.style.opacity = 0.5;
+
+            }
+
+            if (e.target.tagName == "LABEL") {
+
+                rentdurButtons.forEach(element => {
+                    element.style.borderColor = "#0e1c31";
+                    element.style.backgroundColor = "#fafafa";
+                });
+
+                e.srcElement.previousElementSibling.checked = true;
+
+                e.srcElement.parentElement.style.borderColor = "#2a4f87";
+                e.srcElement.parentElement.style.backgroundColor = "#e6e6e6";
+            }
+
+            if (e.target.tagName == "INPUT") {
+
+                rentdurButtons.forEach(element => {
+                    element.style.borderColor = "#0e1c31";
+                    element.style.backgroundColor = "#fafafa";
+                });
+
+                e.target.checked = true;
+
+                e.target.parentElement.style.borderColor = "#2a4f87";
+                e.target.parentElement.style.backgroundColor = "#e6e6e6";
+            }
+
+            rent.forEach(button => {
+                if (button.checked) {
+                    // console.log(button.value);
+                    duration = button.value;
+                    // console.log(duration);
+
+                }
+            })
+
+            orderInfo.innerHTML = "";
+            addProdToPage(productID);
+
+        });
+    });
+});
+
+
+
+
+
+var stripe = Stripe('pk_test_ERYWSEs8exlFbm3glnzDeiga00VmESFxNg');
+var elements = stripe.elements();
+
+var style = {
+    base: {
+        color: "#32325d",
+        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+        fontSmoothing: "antialiased",
+        fontSize: "16px",
+        "::placeholder": {
+            color: "#aab7c4"
         }
-        return res.json();
-    })
-    .then(data => {
-        console.log(data);
-        productID = data[0].uuid;
-        addProdToPage(data[0]);
-    })
-    .catch(err => console.log(err))
+    },
+    invalid: {
+        color: "#fa755a",
+        iconColor: "#fa755a"
+    }
+};
+
+var card = elements.create("card", {
+    style: style
+});
+card.mount("#card-element");
+
+card.addEventListener('change', ({
+    error
+}) => {
+    const displayError = document.getElementById('card-errors');
+    if (error) {
+        displayError.textContent = error.message;
+    } else {
+        displayError.textContent = '';
+    }
 });
 
 function addProdToPage(product) {
     let name = document.createElement("p");
     name.innerText = product.name;
 
-    let spec = document.createElement("h3");
-    spec.innerText = "Specs"
+    // let spec = document.createElement("h3");
+    // spec.innerText = "Specs"
 
     let cpu = document.createElement("p");
     cpu.innerText = `Number of CPU cores : ${product.cpu} cores`;
@@ -128,10 +177,16 @@ function addProdToPage(product) {
     disk.innerText = `Disk space : ${product.disk} GB`;
 
     let price = document.createElement("p");
-    price.innerText = `Price : £ ${product.price}`;
+
+    var formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'GBP',
+    });
+    let pricef = formatter.format(product.price * duration);
+    price.innerText = `Price : ${pricef}`;
 
     orderInfo.appendChild(name);
-    orderInfo.appendChild(spec);
+    // orderInfo.appendChild(spec);
     orderInfo.appendChild(cpu);
     orderInfo.appendChild(ram);
     orderInfo.appendChild(disk);
@@ -140,112 +195,81 @@ function addProdToPage(product) {
 
 }
 
+form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    const dur = duration;
+    var response = fetch(`${URL_API}/create-payment-intent/${c}/${dur}`).then(function (response) {
+        return response.json();
+    }).then(function (responseJson) {
+        stripe.confirmCardPayment(responseJson.clientecret, {
+            payment_method: {
+                card: card,
+                billing_details: {
+                    name: 'Jenny Rosen'
+                }
+            }
+        }).then(function (result) {
+            if (result.error) {
+                console.log(result.error.message);
+            } else {
+                if (result.paymentIntent.status === 'succeeded') {
+                    console.log("payment made yaaaa");
+                    console.log(result);
 
-//     var stripe = Stripe('pk_test_ERYWSEs8exlFbm3glnzDeiga00VmESFxNg');
-//     var elements = stripe.elements();
-    
-//     var response = fetch(`${URL_API}/create-payment-intent/${c}`).then(function(response) {
-//         return response.json();
-//     }).then(function(responseJson) {
-//         var clientSecret = responseJson.clientecret;
-//         sercret = clientSecret;
-//     });
-    
-//     var style = {
-//         base: {
-//         color: "#32325d",
-//         fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-//         fontSmoothing: "antialiased",
-//         fontSize: "16px",
-//         "::placeholder": {
-//         color: "#aab7c4"
-//         }
-//     },
-//     invalid: {
-//         color: "#fa755a",
-//         iconColor: "#fa755a"
-//     }};
-    
-//     var card = elements.create("card", { style: style });
-//     card.mount("#card-element");
-    
-//     card.addEventListener('change', ({error}) => {
-//     const displayError = document.getElementById('card-errors');
-//     if (error) {
-//         displayError.textContent = error.message;
-//     } else {
-//         displayError.textContent = '';
-//     }});
+                    // add order to DB
+                    createOrder(result.paymentIntent.id, productID[0].uuid, result.paymentIntent.created, dur);
+                }
+            }
+        });
+    });
+});
 
-
-// form.addEventListener('submit', function(ev) {
-//     ev.preventDefault();
-//     stripe.confirmCardPayment(sercret, {
-//         payment_method: {
-//         card: card,
-//         billing_details: {
-//             name: 'Jenny Rosen'
-//         }}
-//     }).then(function(result) {
-//         if (result.error) {
-//             console.log(result.error.message);
-//         } else {
-//         if (result.paymentIntent.status === 'succeeded') {
-//             console.log("payment made yaaaa");
-//             console.log(result);
-
-//             // add order to DB
-//             createOrder(result.paymentIntent.id, productID, result.paymentIntent.created);
-//         }}
-// });
-// });
-
-setInterval(function() {
+setInterval(function () {
     refershToken();
 }, 60000); // Every 1 minitue
 
-
 function refershToken() {
     fetch(`${URL_API}/auth/refresh`, {
-        method: 'get',
-        credentials: 'include',
-        headers: {
-            "Content-type": "application/json",
-        }
-    })
-    .then(response => response.json())
-    .then (data => console.log(data))
-    .catch(function (error) {
-        console.log('Request failed', error);
-        console.log(response.status); 
-    });
+            method: 'get',
+            credentials: 'include',
+            headers: {
+                "Content-type": "application/json",
+            }
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(function (error) {
+            console.log('Request failed', error);
+            console.log(response.status);
+        });
 }
 
-function createOrder(payID, prodID, time) {
+function createOrder(payID, prodID, time, dur) {
 
     let formData = {
-        "PaymentID" : payID,
-        "ProductID" : prodID,
-        "Time" : time
+        "PaymentID": payID,
+        "ProductID": prodID,
+        "Time": time,
+        "Dur": dur,
     }
 
     console.log(formData);
-    
+
 
     fetch(`${URL_API}/makeorder`, {
-        method: 'post',
-        credentials: 'include',
-        headers: {
-            "Content-type": "application/json",
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => response.json())
-    .then((data) => {
-        console.log(data);
-        window.location = `../receipts/index.html?id=${data.message}`;
-    })
-    .catch(function (error) {
-        console.log('Request failed', error);
-    });
+            method: 'post',
+            credentials: 'include',
+            headers: {
+                "Content-type": "application/json",
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then((data) => {
+            console.log(data);
+            window.location = `../receipts/index.html?id=${data.message}`;
+        })
+        .catch(function (error) {
+            console.log('Request failed', error);
+        });
 }

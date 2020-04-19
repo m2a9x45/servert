@@ -44,7 +44,8 @@ type CheckoutData struct {
 type OrderData struct {
 	PaymentID string `json="PaymentID"`
 	ProductID string `json="ProductID"`
-	Time      int    `json="time"`
+	Time      int    `json="Time"`
+	Dur       string `json=""Dur`
 }
 
 type OrderObj struct {
@@ -59,6 +60,8 @@ type Order struct {
 	PaymentID string `json="PaymentID"`
 	ProdID    string `json="prod_id"`
 	Time      int    `json="createdAt"`
+	Dur       int    `json=""Dur`
+	Expires   int    `josn="expires"`
 }
 
 type Receipt struct {

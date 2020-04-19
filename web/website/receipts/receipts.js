@@ -6,6 +6,7 @@ const payID = document.getElementById("payID");
 const LoginButton = document.querySelector('#Login');
 const SignupButton = document.querySelector('#Signup');
 const dateOfPur = document.getElementById("dateOfPur");
+const dateofExp = document.getElementById("dateofExp");
 
 
 const URL_API = "http://127.0.0.1:8000";
@@ -77,8 +78,11 @@ function displayinfo(data) {
     const d = new Date(data.order.Time * 1000);
     const strDate = d.toLocaleString('en-GB', {dateStyle: "short", timeStyle : "short"});
 
+    const d2 = new Date(data.order.Expires * 1000);
+    const strDate2 = d2.toLocaleString('en-GB', {dateStyle: "short", timeStyle : "short"});
 
     dateOfPur.innerText = `Date of purchase : ${strDate}`;
+    dateofExp.innerText = `Date of expiry : ${strDate2}`
 
 }
 
@@ -88,7 +92,7 @@ function displayTable(data) {
     prodName.innerText = data.product.name;
 
     let rentDur = document.createElement("td");
-    rentDur.innerText = "1 month";
+    rentDur.innerText = `${data.order.Dur} month(s)`;
 
     let tr1 = document.createElement("tr");
 
@@ -124,7 +128,7 @@ function displayTable(data) {
         style: 'currency',
         currency: 'GBP',
       });
-    let price = formatter.format(data.product.price);
+    let price = formatter.format(data.product.price * data.order.Dur);
     prodTotal.innerText = price;
 
     let tr5 = document.createElement("tr");

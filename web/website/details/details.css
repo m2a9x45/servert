@@ -44,11 +44,14 @@ nav ul li:first-child {
 .orderInfo {
     text-align: center;
     margin: 2% auto;
+    font-size: 14pt;
 }
 
 .content {
-    margin: 5% auto;
+    margin: 3% auto;
     width: 60%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding: 0.5% 5% 0.5% 5%;
 }
 
 #payment-form {
@@ -63,11 +66,45 @@ nav ul li:first-child {
 }
 
 .rentrange {
-    border: 2px solid #0e1c31;;
+    border: 2px solid #0e1c31;
     border-radius: 5px;
     padding: 25px 36px;
     font-size: 14pt;
     width: 22%;
 }
 
-/* .rentrange: */
+@media only screen and (max-width: 1635px) {
+    .rentrange {
+        padding: 25px 5px;
+        width: 20%;
+    }
+}
+
+@media only screen and (max-width: 1300px) {
+    .rentrange {
+        padding: 25px 1px;
+    }
+    .rentgroup {
+        justify-content: space-around;
+        /* align-items: center; */
+    }
+}
+
+
+@media only screen and (max-width: 450px) {
+    .content {
+        margin: 3% auto;
+        width: 95%;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    #payment-form {
+        margin: 10% auto;
+        width: 100%;
+    }
+
+    .navbar {
+        width: 99%;
+    }
+}
+
