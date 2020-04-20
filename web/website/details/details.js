@@ -6,6 +6,7 @@ const URL_API = "http://127.0.0.1:8000";
 
 
 let duration = "";
+let custName = "";
 
 var url_string = window.location.href;
 var url = new URL(url_string);
@@ -57,7 +58,7 @@ window.addEventListener("load", () => {
         .then(data => {
             console.log(data);
             productID = data[0];
-            addProdToPage(data[0]);            
+            addProdToPage(data[0]);
         })
         .catch(err => console.log(err))
 
@@ -118,6 +119,22 @@ window.addEventListener("load", () => {
             addProdToPage(productID);
 
         });
+    });
+
+    fetch(`${URL_API}/account/accountinfo`, {
+        method: 'get',
+        credentials: 'include',
+        headers: {
+            "Content-type": "application/json",
+        }
+    })
+    .then(response => response.json())
+    .then (data => {
+        custName = data[0].Name;
+    })
+    .catch(function (error) {
+        console.log('Request failed', error);
+        console.log(response.status); 
     });
 });
 
@@ -191,23 +208,25 @@ function addProdToPage(product) {
     orderInfo.appendChild(ram);
     orderInfo.appendChild(disk);
     orderInfo.appendChild(price);
-
-
 }
 
 form.addEventListener('submit', function (ev) {
     ev.preventDefault();
     const dur = duration;
-    var response = fetch(`${URL_API}/create-payment-intent/${c}/${dur}`).then(function (response) {
+    var response = fetch(`${URL_API}/create-payment-intent/${c}/${dur}`, {
+        method: "GET",
+        credentials: "include",
+    }).then(function (response) {
         return response.json();
     }).then(function (responseJson) {
         stripe.confirmCardPayment(responseJson.clientecret, {
             payment_method: {
                 card: card,
                 billing_details: {
-                    name: 'Jenny Rosen'
+                    name: custName
                 }
             }
+            //setup_future_usage: 'off_session'
         }).then(function (result) {
             if (result.error) {
                 console.log(result.error.message);
@@ -218,7 +237,7 @@ form.addEventListener('submit', function (ev) {
 
                     // add order to DB
                     console.log(productID);
-                    
+
                     createOrder(result.paymentIntent.id, productID.uuid, dur);
                 }
             }

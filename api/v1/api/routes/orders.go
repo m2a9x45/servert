@@ -51,6 +51,37 @@ func generateOrderID() string {
 
 func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 
+	// add auth to CreatePaymentIntent
+
+	c, err := r.Cookie("token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	tknStr := c.Value
+
+	claims := &models.Claims{}
+
+	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if !tkn.Valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	vars := mux.Vars(r)
 	id := vars["prodID"]
 	dur := vars["dur"]
@@ -97,6 +128,24 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// get customerID from userID
+
+		var customerID string
+
+		result, err = database.DBCon.Query("SELECT stripe_id FROM users WHERE user_id=(?)", claims.UserID)
+		if err != nil {
+			println(err)
+		}
+
+		for result.Next() {
+			var custID string
+			err := result.Scan(&custID)
+			if err != nil {
+				panic(err.Error())
+			}
+			customerID = custID
+		}
+
 		// stripe.Key = "sk_test_OGXIlmLXL1Gvhpa9jqBdxutN00YB96uOjP"
 
 		stripeKey, exists := os.LookupEnv("STRIPE_KEY")
@@ -115,6 +164,7 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 		params := &stripe.PaymentIntentParams{
 			Amount:   stripe.Int64(chargePrice),
 			Currency: stripe.String(string(stripe.CurrencyGBP)),
+			Customer: stripe.String(customerID),
 		}
 
 		intent, _ := paymentintent.New(params)
@@ -122,6 +172,7 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 		data := models.CheckoutData{
 			ClientSecret: intent.ClientSecret,
 		}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(data)
