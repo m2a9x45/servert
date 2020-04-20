@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -96,7 +97,13 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		stripe.Key = "sk_test_OGXIlmLXL1Gvhpa9jqBdxutN00YB96uOjP"
+		// stripe.Key = "sk_test_OGXIlmLXL1Gvhpa9jqBdxutN00YB96uOjP"
+
+		stripeKey, exists := os.LookupEnv("STRIPE_KEY")
+
+		if exists {
+			stripe.Key = stripeKey
+		}
 
 		price := allproducts[0].Price
 		pricePennies := int64(price * 100)
