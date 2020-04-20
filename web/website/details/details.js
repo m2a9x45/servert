@@ -217,7 +217,9 @@ form.addEventListener('submit', function (ev) {
                     console.log(result);
 
                     // add order to DB
-                    createOrder(result.paymentIntent.id, productID[0].uuid, result.paymentIntent.created, dur);
+                    console.log(productID);
+                    
+                    createOrder(result.paymentIntent.id, productID.uuid, dur);
                 }
             }
         });
@@ -244,12 +246,11 @@ function refershToken() {
         });
 }
 
-function createOrder(payID, prodID, time, dur) {
+function createOrder(payID, prodID, dur) {
 
     let formData = {
         "PaymentID": payID,
         "ProductID": prodID,
-        "Time": time,
         "Dur": dur,
     }
 

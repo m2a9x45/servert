@@ -100,7 +100,7 @@ function displayTable(data) {
     prodCpulabel.innerText = "Cpu";
 
     let prodCpu = document.createElement("td");
-    prodCpu.innerText = data.product.cpu;
+    prodCpu.innerText = `${data.product.cpu} v-core(s)`;
 
     let tr2 = document.createElement("tr");
 
@@ -108,7 +108,7 @@ function displayTable(data) {
     prodRamlabel.innerText = "Ram";
 
     let prodRam = document.createElement("td");
-    prodRam.innerText = data.product.ram;
+    prodRam.innerText = `${data.product.ram} GB`;
 
     let tr3 = document.createElement("tr");
 
@@ -116,7 +116,7 @@ function displayTable(data) {
     prodDisklabel.innerText = "Disk";
 
     let prodDisk = document.createElement("td");
-    prodDisk.innerText = data.product.disk;
+    prodDisk.innerText = `${data.product.disk} GB`;
 
     let tr4 = document.createElement("tr");
 

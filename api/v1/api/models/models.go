@@ -44,7 +44,6 @@ type CheckoutData struct {
 type OrderData struct {
 	PaymentID string `json="PaymentID"`
 	ProductID string `json="ProductID"`
-	Time      int    `json="Time"`
 	Dur       string `json=""Dur`
 }
 

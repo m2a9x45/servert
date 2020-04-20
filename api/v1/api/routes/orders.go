@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"../database"
 	"../models"
@@ -169,18 +170,26 @@ func MakeOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	OrderID := generateOrderID()
+	now := time.Now()
+	secs := now.Unix()
 
 	println(OrderID, "seletced")
-
+	// converts duration which is a string to an int
 	dur, err := strconv.Atoi(order.Dur)
 	if err != nil {
 		panic(err)
 	}
+	// checks that int is 1,3,6,12 for the months we offer for products
+	if dur != 1 && dur != 3 && dur != 6 && dur != 12 {
+		res := models.ResObj{Success: false, Message: "You cannot rent the sever for that period of time"}
+		json.NewEncoder(w).Encode(res)
+		return
+	}
 
 	factor := dur * 2629743 // 2629743 number of seconds in a month
-	expires := order.Time + factor
+	expires := secs + int64(factor)
 
-	result, err := database.DBCon.Query("INSERT INTO orders (order_id, user_id, payment_id, prod_id, created_at, duration, expires_at ) VALUES (?,?,?,?,?,?,?)", OrderID, claims.UserID, order.PaymentID, order.ProductID, order.Time, order.Dur, expires)
+	result, err := database.DBCon.Query("INSERT INTO orders (order_id, user_id, payment_id, prod_id, created_at, duration, expires_at ) VALUES (?,?,?,?,?,?,?)", OrderID, claims.UserID, order.PaymentID, order.ProductID, secs, order.Dur, expires)
 	if err != nil {
 		log.Fatal("Error wilst inserting into DB", err)
 	}

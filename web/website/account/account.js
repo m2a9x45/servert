@@ -137,7 +137,7 @@ function addProdToPage(product, OrderID) {
         currency: 'GBP',
       });
     let priceFM = formatter.format(product.price);
-    price.innerText = `Price : ${priceFM}`;
+    price.innerText = `Price : ${priceFM} per a month`;
 
     const orderdiv = document.createElement("div");
     orderdiv.className = "orderdiv";
