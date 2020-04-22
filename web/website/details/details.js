@@ -225,8 +225,8 @@ form.addEventListener('submit', function (ev) {
                 billing_details: {
                     name: custName
                 }
-            }
-            //setup_future_usage: 'off_session'
+            },
+            setup_future_usage: 'off_session'
         }).then(function (result) {
             if (result.error) {
                 console.log(result.error.message);
@@ -287,7 +287,7 @@ function createOrder(payID, prodID, dur) {
         .then(response => response.json())
         .then((data) => {
             console.log(data);
-            window.location = `../receipts/index.html?id=${data.message}`;
+            //window.location = `../receipts/index.html?id=${data.message}`;
         })
         .catch(function (error) {
             console.log('Request failed', error);

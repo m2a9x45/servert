@@ -1,5 +1,6 @@
 const orderInfo = document.querySelector(".orderInfo");
 const userData = document.querySelector(".userData");
+const cardInfo = document.querySelector(".cardInfo");
 
 const URL_API = "http://127.0.0.1:8000";
 
@@ -48,6 +49,42 @@ fetch(`${URL_API}/account/accountinfo`, {
     console.log('Request failed', error);
     console.log(response.status); 
 });
+
+fetch(`${URL_API}/account/customercards`, {
+    method: 'get',
+    credentials: 'include',
+    headers: {
+        "Content-type": "application/json",
+    }
+})
+.then(response => response.json())
+.then (data => {
+    console.log(data);
+
+    data.forEach(card => {
+        let name = document.createElement("p")
+        name.innerText = `${card.Brand} - ${card.Last4}`;
+        name.setAttribute("id", "card");
+
+        let expiry = document.createElement("p")
+        expiry.innerText = `Expiry - ${card.Exp_month}/${card.Exp_year}`;
+        expiry.setAttribute("id", "carddate");
+
+        let div = document.createElement("div");
+        div.setAttribute("class", "cardDetails")
+        div.appendChild(name);
+        div.appendChild(expiry)
+
+        cardInfo.appendChild(div);
+    });
+})
+.catch(function (error) {
+    console.log('Request failed', error);
+    console.log(response.status); 
+});
+
+
+
 
 fetch(`${URL_API}/getorders`, {
     method: 'get',

@@ -66,6 +66,7 @@ func main() {
 	account.HandleFunc("/account", routes.Account).Methods("GET")
 	account.HandleFunc("/accountinfo", routes.AccountInfo).Methods("GET")
 	account.HandleFunc("/receipt/{receiptID}", routes.Getreceipt).Methods("GET")
+	account.HandleFunc("/customercards", routes.Getcustomercards).Methods("GET")
 
 	//products.go
 	r.HandleFunc("/products/{prodID}", routes.GetProducts).Methods("GET")

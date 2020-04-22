@@ -159,6 +159,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		Value:    tokenString,
 		Expires:  expirationTime,
 		HttpOnly: true,
+		Path:     "/",
 	})
 
 	res := models.ResObj{Success: true, Message: "Details inserted into DB"}
