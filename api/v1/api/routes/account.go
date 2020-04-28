@@ -16,7 +16,7 @@ import (
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/gorilla/mux"
 	stripe "github.com/stripe/stripe-go"
-	"github.com/stripe/stripe-go/card"
+	"github.com/stripe/stripe-go/paymentmethod"
 )
 
 var jwtKey []byte
@@ -373,20 +373,33 @@ func Getcustomercards(w http.ResponseWriter, r *http.Request) {
 		stripe.Key = stripeKey
 	}
 
-	params := &stripe.CardListParams{
+	// params := &stripe.CardListParams{
+	// 	Customer: stripe.String(customerID),
+	// }
+	// params.Filters.AddFilter("limit", "", "3")
+	// i := card.List(params)
+
+	params := &stripe.PaymentMethodListParams{
 		Customer: stripe.String(customerID),
+		Type:     stripe.String("card"),
 	}
-	params.Filters.AddFilter("limit", "", "3")
-	i := card.List(params)
 
 	cards := []models.Card{}
 
+	i := paymentmethod.List(params)
 	for i.Next() {
-		c := i.Card()
-		fmt.Println(c.ID)
-		card := models.Card{ID: c.ID, Last4: c.Last4, Brand: c.Brand, Exp_month: c.ExpMonth, Exp_year: c.ExpYear}
+		pm := i.PaymentMethod()
+		fmt.Println(pm.Card.Fingerprint)
+		card := models.Card{ID: pm.ID, Fingerprint: pm.Card.Fingerprint, Last4: pm.Card.Last4, Brand: pm.Card.Brand, Exp_month: pm.Card.ExpMonth, Exp_year: pm.Card.ExpYear}
 		cards = append(cards, card)
 	}
+
+	// for i.Next() {
+	// 	c := i.Card()
+	// 	fmt.Println(c.ID)
+	// 	card := models.Card{ID: c.ID, Last4: c.Last4, Brand: c.Brand, Exp_month: c.ExpMonth, Exp_year: c.ExpYear}
+	// 	cards = append(cards, card)
+	// }
 
 	// defult card shows as index 0 the first
 

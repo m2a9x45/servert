@@ -96,9 +96,10 @@ type ResetPasswordDB struct {
 }
 
 type Card struct {
-	ID        string           `json="id"`
-	Brand     stripe.CardBrand `json="brand"`
-	Exp_month uint8            `json="exp_month"`
-	Exp_year  uint16           `json="exp_year"`
-	Last4     string           `json="last4"`
+	ID          string                        `json="id"`
+	Fingerprint string                        `json="fingerprint"`
+	Brand       stripe.PaymentMethodCardBrand `json="brand"`
+	Exp_month   uint64                        `json="exp_month"`
+	Exp_year    uint64                        `json="exp_year"`
+	Last4       string                        `json="last4"`
 }

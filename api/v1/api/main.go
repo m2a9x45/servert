@@ -73,7 +73,7 @@ func main() {
 	r.HandleFunc("/products", routes.GetProducts).Methods("GET")
 
 	//orders.go
-	r.HandleFunc("/create-payment-intent/{prodID}/{dur}", routes.CreatePaymentIntent).Methods("GET")
+	r.HandleFunc("/create-payment-intent/{prodID}/{dur}/{cardID}", routes.CreatePaymentIntent).Methods("GET")
 	r.HandleFunc("/makeorder", routes.MakeOrder).Methods("POST", "OPTIONS")
 	r.HandleFunc("/getorders", routes.GetOrders).Methods("GET")
 

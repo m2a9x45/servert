@@ -85,6 +85,7 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["prodID"]
 	dur := vars["dur"]
+	cardID := vars["cardID"]
 
 	durI, err := strconv.Atoi(dur)
 	if err != nil {
@@ -100,6 +101,7 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if id != "" {
+
 		var allproducts []models.Product
 
 		result, err := database.DBCon.Query("SELECT * from products WHERE prod_id=(?)", id)
@@ -161,10 +163,23 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 		println(pricePennies, " in p")
 		println(chargePrice, "for", durI, "months")
 
-		params := &stripe.PaymentIntentParams{
-			Amount:   stripe.Int64(chargePrice),
-			Currency: stripe.String(string(stripe.CurrencyGBP)),
-			Customer: stripe.String(customerID),
+		var params *stripe.PaymentIntentParams
+
+		if cardID != "" {
+			// using saved card
+			params = &stripe.PaymentIntentParams{
+				Amount:        stripe.Int64(chargePrice),
+				Currency:      stripe.String(string(stripe.CurrencyGBP)),
+				Customer:      stripe.String(customerID),
+				PaymentMethod: stripe.String(cardID),
+			}
+		} else {
+			// using a new card
+			params = &stripe.PaymentIntentParams{
+				Amount:   stripe.Int64(chargePrice),
+				Currency: stripe.String(string(stripe.CurrencyGBP)),
+				Customer: stripe.String(customerID),
+			}
 		}
 
 		intent, _ := paymentintent.New(params)
