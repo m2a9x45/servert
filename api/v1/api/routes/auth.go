@@ -6,12 +6,15 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"../database"
 	"../models"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/segmentio/ksuid"
+	stripe "github.com/stripe/stripe-go"
+	"github.com/stripe/stripe-go/customer"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -104,7 +107,24 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 
 	println(userID, "seletced")
 
-	result, err := database.DBCon.Query("INSERT INTO users (name, user_id, email, password) VALUES (?,?,?,?)", signup.Name, userID, signup.Email, hashedPassword)
+	// Create stripe customer
+
+	stripeKey, exists := os.LookupEnv("STRIPE_KEY")
+
+	if exists {
+		stripe.Key = stripeKey
+	}
+
+	params := &stripe.CustomerParams{
+		Description: stripe.String("My First Test Customer (created for API docs)"),
+		Name:        stripe.String(signup.Name),
+	}
+
+	params.AddMetadata("userID", userID)
+
+	c, _ := customer.New(params)
+
+	result, err := database.DBCon.Query("INSERT INTO users (name, user_id, email, password, stripe_id) VALUES (?,?,?,?,?)", signup.Name, userID, signup.Email, hashedPassword, c.ID)
 	if err != nil {
 		log.Fatal("Error wilst inserting into DB", err)
 	}
@@ -139,6 +159,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		Value:    tokenString,
 		Expires:  expirationTime,
 		HttpOnly: true,
+		Path:     "/",
 	})
 
 	res := models.ResObj{Success: true, Message: "Details inserted into DB"}

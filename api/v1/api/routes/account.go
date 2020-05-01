@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	"../database"
 	"../models"
@@ -14,6 +15,8 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/gorilla/mux"
+	stripe "github.com/stripe/stripe-go"
+	"github.com/stripe/stripe-go/paymentmethod"
 )
 
 var jwtKey []byte
@@ -313,6 +316,94 @@ func Getreceipt(w http.ResponseWriter, r *http.Request) {
 	res := models.ResObj{Success: false, Message: "Sorry we couldn't find your receipts"}
 	json.NewEncoder(w).Encode(res)
 
+}
+
+func Getcustomercards(w http.ResponseWriter, r *http.Request) {
+
+	c, err := r.Cookie("token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	tknStr := c.Value
+
+	claims := &models.Claims{}
+
+	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if !tkn.Valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	// get customer ID from DB using JWT userID
+
+	var customerID string
+
+	result, err := database.DBCon.Query("SELECT stripe_id FROM users WHERE user_id=(?)", claims.UserID)
+	if err != nil {
+		println(err)
+	}
+
+	for result.Next() {
+		var custID string
+		err := result.Scan(&custID)
+		if err != nil {
+			panic(err.Error())
+		}
+		customerID = custID
+	}
+
+	stripeKey, exists := os.LookupEnv("STRIPE_KEY")
+
+	if exists {
+		stripe.Key = stripeKey
+	}
+
+	// params := &stripe.CardListParams{
+	// 	Customer: stripe.String(customerID),
+	// }
+	// params.Filters.AddFilter("limit", "", "3")
+	// i := card.List(params)
+
+	params := &stripe.PaymentMethodListParams{
+		Customer: stripe.String(customerID),
+		Type:     stripe.String("card"),
+	}
+
+	cards := []models.Card{}
+
+	i := paymentmethod.List(params)
+	for i.Next() {
+		pm := i.PaymentMethod()
+		fmt.Println(pm.Card.Fingerprint)
+		card := models.Card{ID: pm.ID, Fingerprint: pm.Card.Fingerprint, Last4: pm.Card.Last4, Brand: pm.Card.Brand, Exp_month: pm.Card.ExpMonth, Exp_year: pm.Card.ExpYear}
+		cards = append(cards, card)
+	}
+
+	// for i.Next() {
+	// 	c := i.Card()
+	// 	fmt.Println(c.ID)
+	// 	card := models.Card{ID: c.ID, Last4: c.Last4, Brand: c.Brand, Exp_month: c.ExpMonth, Exp_year: c.ExpYear}
+	// 	cards = append(cards, card)
+	// }
+
+	// defult card shows as index 0 the first
+
+	json.NewEncoder(w).Encode(cards)
 }
 
 type data struct {

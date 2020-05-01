@@ -66,13 +66,15 @@ func main() {
 	account.HandleFunc("/account", routes.Account).Methods("GET")
 	account.HandleFunc("/accountinfo", routes.AccountInfo).Methods("GET")
 	account.HandleFunc("/receipt/{receiptID}", routes.Getreceipt).Methods("GET")
+	account.HandleFunc("/customercards", routes.Getcustomercards).Methods("GET")
 
 	//products.go
 	r.HandleFunc("/products/{prodID}", routes.GetProducts).Methods("GET")
 	r.HandleFunc("/products", routes.GetProducts).Methods("GET")
 
 	//orders.go
-	r.HandleFunc("/create-payment-intent/{prodID}/{dur}", routes.CreatePaymentIntent).Methods("GET")
+	r.HandleFunc("/create-payment-intent/{prodID}/{dur}/{cardID}", routes.CreatePaymentIntent).Methods("GET")
+	r.HandleFunc("/create-payment-intent/{prodID}/{dur}/", routes.CreatePaymentIntent).Methods("GET")
 	r.HandleFunc("/makeorder", routes.MakeOrder).Methods("POST", "OPTIONS")
 	r.HandleFunc("/getorders", routes.GetOrders).Methods("GET")
 

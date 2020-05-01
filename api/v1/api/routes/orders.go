@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -50,9 +51,41 @@ func generateOrderID() string {
 
 func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 
+	// add auth to CreatePaymentIntent
+
+	c, err := r.Cookie("token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	tknStr := c.Value
+
+	claims := &models.Claims{}
+
+	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if !tkn.Valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	vars := mux.Vars(r)
 	id := vars["prodID"]
 	dur := vars["dur"]
+	cardID := vars["cardID"]
 
 	durI, err := strconv.Atoi(dur)
 	if err != nil {
@@ -68,6 +101,7 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if id != "" {
+
 		var allproducts []models.Product
 
 		result, err := database.DBCon.Query("SELECT * from products WHERE prod_id=(?)", id)
@@ -96,7 +130,31 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		stripe.Key = "sk_test_OGXIlmLXL1Gvhpa9jqBdxutN00YB96uOjP"
+		// get customerID from userID
+
+		var customerID string
+
+		result, err = database.DBCon.Query("SELECT stripe_id FROM users WHERE user_id=(?)", claims.UserID)
+		if err != nil {
+			println(err)
+		}
+
+		for result.Next() {
+			var custID string
+			err := result.Scan(&custID)
+			if err != nil {
+				panic(err.Error())
+			}
+			customerID = custID
+		}
+
+		// stripe.Key = "sk_test_OGXIlmLXL1Gvhpa9jqBdxutN00YB96uOjP"
+
+		stripeKey, exists := os.LookupEnv("STRIPE_KEY")
+
+		if exists {
+			stripe.Key = stripeKey
+		}
 
 		price := allproducts[0].Price
 		pricePennies := int64(price * 100)
@@ -105,9 +163,23 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 		println(pricePennies, " in p")
 		println(chargePrice, "for", durI, "months")
 
-		params := &stripe.PaymentIntentParams{
-			Amount:   stripe.Int64(chargePrice),
-			Currency: stripe.String(string(stripe.CurrencyGBP)),
+		var params *stripe.PaymentIntentParams
+
+		if cardID != "" {
+			// using saved card
+			params = &stripe.PaymentIntentParams{
+				Amount:        stripe.Int64(chargePrice),
+				Currency:      stripe.String(string(stripe.CurrencyGBP)),
+				Customer:      stripe.String(customerID),
+				PaymentMethod: stripe.String(cardID),
+			}
+		} else {
+			// using a new card
+			params = &stripe.PaymentIntentParams{
+				Amount:   stripe.Int64(chargePrice),
+				Currency: stripe.String(string(stripe.CurrencyGBP)),
+				Customer: stripe.String(customerID),
+			}
 		}
 
 		intent, _ := paymentintent.New(params)
@@ -115,6 +187,7 @@ func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 		data := models.CheckoutData{
 			ClientSecret: intent.ClientSecret,
 		}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(data)

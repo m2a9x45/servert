@@ -2,10 +2,17 @@ const form = document.getElementById('payment-form');
 const orderInfo = document.querySelector(".orderInfo");
 const rentdurButtons = document.querySelectorAll(".rentrange");
 const rent = document.getElementsByName("rent");
+const cardInfo = document.querySelector(".cardInfo");
+const newCard = document.querySelector("#newCard");
+const payment = document.querySelector(".payment");
+const buybutton = document.querySelector("#buybutton");
+const radios = document.getElementsByName('card');
+
 const URL_API = "http://127.0.0.1:8000";
 
 
 let duration = "";
+let custName = "";
 
 var url_string = window.location.href;
 var url = new URL(url_string);
@@ -30,11 +37,7 @@ window.addEventListener("load", () => {
         .then(response => {
             console.log(response.status); // Will show you the status
             if (!response.ok) {
-                if (confirm("You need to login")) {
-                    window.location = "../signin";
-                } else {
-                    window.location = "../signin";
-                }
+                window.location = "../signin";
             }
             return response.json();
         })
@@ -57,7 +60,7 @@ window.addEventListener("load", () => {
         .then(data => {
             console.log(data);
             productID = data[0];
-            addProdToPage(data[0]);            
+            addProdToPage(data[0]);
         })
         .catch(err => console.log(err))
 
@@ -119,11 +122,65 @@ window.addEventListener("load", () => {
 
         });
     });
+
+    fetch(`${URL_API}/account/accountinfo`, {
+        method: 'get',
+        credentials: 'include',
+        headers: {
+            "Content-type": "application/json",
+        }
+    })
+    .then(response => response.json())
+    .then (data => {
+        custName = data[0].Name;
+    })
+    .catch(function (error) {
+        console.log('Request failed', error);
+        console.log(response.status); 
+    });
+
+    fetch(`${URL_API}/account/customercards`, {
+        method: 'get',
+        credentials: 'include',
+        headers: {
+            "Content-type": "application/json",
+        }
+    })
+    .then(response => response.json())
+    .then (data => {
+        console.log(data);
+
+        if (data.length > 0) {
+
+            form.style.display = "none";
+
+            for (let i = 0; i < data.length; i++) {
+                addcard(data[i])
+            }
+        } else {
+            buybutton.style.display = "none";
+        }
+
+        
+
+        
+        
+    })
+    .catch(function (error) {
+        console.log('Request failed', error);
+        console.log(response.status); 
+    });
 });
 
+newCard.addEventListener("click", () => {
+    event.preventDefault();
 
+    cardInfo.style.display = "none";
+    form.style.display = "block";
+    payment.style.display = "none";
+    newCard.style.display = "none";
 
-
+})
 
 var stripe = Stripe('pk_test_ERYWSEs8exlFbm3glnzDeiga00VmESFxNg');
 var elements = stripe.elements();
@@ -191,23 +248,25 @@ function addProdToPage(product) {
     orderInfo.appendChild(ram);
     orderInfo.appendChild(disk);
     orderInfo.appendChild(price);
-
-
 }
 
 form.addEventListener('submit', function (ev) {
     ev.preventDefault();
     const dur = duration;
-    var response = fetch(`${URL_API}/create-payment-intent/${c}/${dur}`).then(function (response) {
+    var response = fetch(`${URL_API}/create-payment-intent/${c}/${dur}/`, {
+        method: "GET",
+        credentials: "include",
+    }).then(function (response) {
         return response.json();
     }).then(function (responseJson) {
         stripe.confirmCardPayment(responseJson.clientecret, {
             payment_method: {
                 card: card,
                 billing_details: {
-                    name: 'Jenny Rosen'
+                    name: custName
                 }
-            }
+            },
+            setup_future_usage: 'off_session'
         }).then(function (result) {
             if (result.error) {
                 console.log(result.error.message);
@@ -218,13 +277,59 @@ form.addEventListener('submit', function (ev) {
 
                     // add order to DB
                     console.log(productID);
-                    
+
                     createOrder(result.paymentIntent.id, productID.uuid, dur);
                 }
             }
         });
     });
 });
+
+buybutton.addEventListener('click', () => {
+    event.preventDefault(); 
+
+    let cardID = "";
+
+    for (var i = 0, length = radios.length; i < length; i++) {
+        if (radios[i].checked) {
+            cardID = radios[i].value;
+            break;
+        }
+    }
+
+
+    const dur = duration;
+    var response = fetch(`${URL_API}/create-payment-intent/${c}/${dur}/${cardID}`, {
+        method: "GET",
+        credentials: "include",
+    }).then(function (response) {
+        return response.json();
+    }).then(function (responseJson) {
+        console.log(responseJson);
+        stripe
+            .confirmCardPayment(responseJson.clientecret, {
+                payment_method: cardID,
+            })
+            .then(function(result) {
+                // Handle result.error or result.paymentIntent
+                if (result.error) {
+                    console.log(result.error.message);
+                } else {
+                    if (result.paymentIntent.status === 'succeeded') {
+                        console.log("payment made yaaaa");
+                        console.log(result);
+    
+                        // add order to DB
+                        console.log(productID);
+    
+                        createOrder(result.paymentIntent.id, productID.uuid, dur);  
+                    }
+                }
+            });
+    });
+
+
+})
 
 setInterval(function () {
     refershToken();
@@ -273,4 +378,23 @@ function createOrder(payID, prodID, dur) {
         .catch(function (error) {
             console.log('Request failed', error);
         });
+}
+
+function addcard(data) {
+
+    let input = document.createElement("input");
+    input.setAttribute("type", "radio");
+    input.setAttribute("name", "card");
+    input.setAttribute("value", data.ID);
+
+    let label = document.createElement("label");
+    label.innerText = `${data.Brand} ${data.Last4} Expires : ${data.Exp_month}/${data.Exp_year}`
+
+    let linebreak = document.createElement("br");
+
+    cardInfo.appendChild(input);
+    cardInfo.appendChild(label);
+    cardInfo.appendChild(linebreak);
+
+
 }

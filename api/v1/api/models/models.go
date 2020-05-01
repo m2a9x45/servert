@@ -1,6 +1,9 @@
 package models
 
-import jwt "github.com/dgrijalva/jwt-go"
+import (
+	jwt "github.com/dgrijalva/jwt-go"
+	stripe "github.com/stripe/stripe-go"
+)
 
 type Product struct {
 	ID       string  `json:"id"`
@@ -90,4 +93,13 @@ type ResetPassword struct {
 type ResetPasswordDB struct {
 	Email   string `json="email"`
 	Expires int64  `json="expires"`
+}
+
+type Card struct {
+	ID          string                        `json="id"`
+	Fingerprint string                        `json="fingerprint"`
+	Brand       stripe.PaymentMethodCardBrand `json="brand"`
+	Exp_month   uint64                        `json="exp_month"`
+	Exp_year    uint64                        `json="exp_year"`
+	Last4       string                        `json="last4"`
 }
