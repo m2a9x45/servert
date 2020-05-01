@@ -37,11 +37,7 @@ window.addEventListener("load", () => {
         .then(response => {
             console.log(response.status); // Will show you the status
             if (!response.ok) {
-                if (confirm("You need to login")) {
-                    window.location = "../signin";
-                } else {
-                    window.location = "../signin";
-                }
+                window.location = "../signin";
             }
             return response.json();
         })
@@ -161,6 +157,8 @@ window.addEventListener("load", () => {
             for (let i = 0; i < data.length; i++) {
                 addcard(data[i])
             }
+        } else {
+            buybutton.style.display = "none";
         }
 
         
@@ -255,7 +253,7 @@ function addProdToPage(product) {
 form.addEventListener('submit', function (ev) {
     ev.preventDefault();
     const dur = duration;
-    var response = fetch(`${URL_API}/create-payment-intent/${c}/${dur}`, {
+    var response = fetch(`${URL_API}/create-payment-intent/${c}/${dur}/`, {
         method: "GET",
         credentials: "include",
     }).then(function (response) {
@@ -324,7 +322,7 @@ buybutton.addEventListener('click', () => {
                         // add order to DB
                         console.log(productID);
     
-                        createOrder(result.paymentIntent.id, productID.uuid, dur);
+                        createOrder(result.paymentIntent.id, productID.uuid, dur);  
                     }
                 }
             });
