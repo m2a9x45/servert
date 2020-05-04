@@ -49,6 +49,54 @@ func generateOrderID() string {
 	return orderID
 }
 
+func generateTaskID() string {
+
+	id := ksuid.New()
+	taskID := "task_" + id.String()
+
+	println(taskID)
+
+	result, err := database.DBCon.Query("SELECT task_id from tasks WHERE task_id=(?)", taskID)
+	if err != nil {
+		println(err)
+	}
+
+	defer result.Close()
+
+	for result.Next() {
+		var taskid string
+		err := result.Scan(&taskid)
+		if err != nil {
+			panic(err)
+		}
+		if taskid != "" {
+			// make new user id
+			println(taskid, "already exists")
+			generateTaskID()
+		}
+	}
+
+	return taskID
+}
+
+func createTask(user string, taskType string) {
+	fmt.Println(user)
+	taskID := generateTaskID()
+	status := "open"
+
+	now := time.Now()
+	secs := now.Unix()
+
+	result, err := database.DBCon.Query("INSERT INTO tasks (task_id, user_id, status, type, created_at) VALUES (?,?,?,?,?)", taskID, user, status, taskType, secs)
+	if err != nil {
+		log.Fatal("Error wilst inserting into DB", err)
+	}
+
+	defer result.Close()
+
+	fmt.Println("Inserted Into DB")
+}
+
 func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 
 	// add auth to CreatePaymentIntent
@@ -270,6 +318,8 @@ func MakeOrder(w http.ResponseWriter, r *http.Request) {
 	defer result.Close()
 
 	fmt.Println("Inserted Into DB")
+
+	createTask(claims.UserID, "ServerSetup")
 
 	res := models.ResObj{Success: true, Message: OrderID}
 
