@@ -78,6 +78,10 @@ func main() {
 	r.HandleFunc("/makeorder", routes.MakeOrder).Methods("POST", "OPTIONS")
 	r.HandleFunc("/getorders", routes.GetOrders).Methods("GET")
 
+	// internal
+	internal := r.PathPrefix("/internal").Subrouter()
+	internal.HandleFunc("/tasks", routes.GetTasks).Methods("GET")
+
 	r.HandleFunc("/", hello).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(header, methods, origin, creds)(r)))

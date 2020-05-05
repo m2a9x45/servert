@@ -1,6 +1,8 @@
 package models
 
 import (
+	"database/sql"
+
 	jwt "github.com/dgrijalva/jwt-go"
 	stripe "github.com/stripe/stripe-go"
 )
@@ -102,4 +104,15 @@ type Card struct {
 	Exp_month   uint64                        `json="exp_month"`
 	Exp_year    uint64                        `json="exp_year"`
 	Last4       string                        `json="last4"`
+}
+
+type Task struct {
+	ID        string         `json="id"`
+	UUID      string         `json="uuid"`
+	UserID    string         `json="userID"`
+	QueueID   sql.NullString `json="queueID"`
+	LinkID    string         `json="linkID"`
+	Assigned  sql.NullString `json="assigned"`
+	Status    string         `json="status"`
+	CreatedAt int            `json="createdAt"`
 }

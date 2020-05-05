@@ -87,7 +87,7 @@ func createTask(user string, taskType string) {
 	now := time.Now()
 	secs := now.Unix()
 
-	result, err := database.DBCon.Query("INSERT INTO tasks (task_id, user_id, status, type, created_at) VALUES (?,?,?,?,?)", taskID, user, status, taskType, secs)
+	result, err := database.DBCon.Query("INSERT INTO tasks (task_id, user_id, status, link_id, created_at) VALUES (?,?,?,?,?)", taskID, user, status, taskType, secs)
 	if err != nil {
 		log.Fatal("Error wilst inserting into DB", err)
 	}
@@ -319,7 +319,7 @@ func MakeOrder(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Inserted Into DB")
 
-	createTask(claims.UserID, "ServerSetup")
+	createTask(claims.UserID, OrderID)
 
 	res := models.ResObj{Success: true, Message: OrderID}
 

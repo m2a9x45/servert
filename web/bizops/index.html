@@ -1,11 +1,235 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
     <title>Bizops - servert</title>
 </head>
+
 <body>
-    <h1>Hi</h1>
+
+    <div class="contaniner">
+        <div class="TaskView">
+            <h4>Task List </h4>
+            <input type="text" placeholder="Search Task">
+            <div class="tasksList">
+                <!-- <div class="task" id="task1">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>5 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>7 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>9 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>5 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>7 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>9 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>5 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>7 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>9 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>5 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>7 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>9 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>5 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>7 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>9 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>5 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>7 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>9 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>5 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>7 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>9 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>5 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>7 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div>
+                <div class="task">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>9 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div> -->
+
+
+            </div>
+        </div>
+
+        <div class="content">
+
+            <p>TaskID : task_1bVBx85VhnNUBtnLdGXaJxCtXW4</p>
+
+            <p>
+                Assigned Ip :
+            </p>
+            <input type="text" placeholder="192.68.42.5">
+
+            <button>Create Server</button>
+
+        </div>
+
+        <div class="infoPanel">
+            <h1>Info</h1>
+
+            <p>Name : James Taylor</p>
+            <p>Email : taylor.james@gmail.com</p>
+
+            <h2>Orders</h2>
+
+            <p>OrderID : </p>
+            <p>DOO : 05/05/20</p>
+            <p>DOE : 05/06/20</p>
+
+            <h2>Cards</h2>
+
+            <p>Visa 5365 exp 12/24</p>
+            <p>Is recurring</p>
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+    <script src="main.js"></script>
 </body>
+
 </html>
