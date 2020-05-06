@@ -41,6 +41,7 @@ body {
 }
 
 .content {
+    visibility: hidden;
     width: 100%;
     padding: 1rem auto;
     background-color: cadetblue;

@@ -1,6 +1,7 @@
 // make call to get tasks.
 const tasks = document.querySelectorAll(".task");
 const tasksList = document.querySelector(".tasksList");
+const content = document.querySelector(".content");
 const URL_API = "http://127.0.0.1:8000";
 
 fetch(`${URL_API}/internal/tasks`)
@@ -51,15 +52,7 @@ function addTaskToPage(tasks) {
         status.innerText = task.Status;
 
         divTask.addEventListener("click", (e) => {
-            // console.log(e);
-            if (e.target.parentElement.id) {
-                console.log(e.target.parentElement.id);  
-            }
-    
-            if (e.target.parentElement.parentElement.id) {
-                console.log(e.target.parentElement.parentElement.id);
-            }
-    
+            selectTask(e, task.UUID);
         });
 
         divTitle.appendChild(name);
@@ -73,5 +66,21 @@ function addTaskToPage(tasks) {
 
 
     });
+
+}
+
+window.onpopstate = function(event) {
+    alert("location: " + document.location + ", state: " + JSON.stringify(event.state));
+  };
+
+function selectTask(e, taskID) {
+    console.log(taskID);
+    console.log(Date.now());
+    
+
+    let url = window.history.pushState( {} , '', `?task_id=${taskID}` );
+
+    content.style.visibility = "visible";
+    
 
 }
