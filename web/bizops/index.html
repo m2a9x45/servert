@@ -1,11 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
     <title>Bizops - servert</title>
 </head>
+
 <body>
-    <h1>Hi</h1>
+
+    <form class="loginFrom">
+        <h1>Login</h1>
+        <label for="user">User</label> <br>
+        <input type="text" name="user" id="username" value="lewis+admin@servert.co.uk"> <br>
+        <label for="pass">Password</label> <br>
+        <input type="password" name="pass" id="password"> <br>
+        <button type="submit">Login</button>
+    </form>
+    
+
+    <div class="contaniner">
+        <div class="TaskView">
+            <h4>Task List </h4>
+            <input type="text" placeholder="Search Task">
+            <div class="tasksList">
+                <!-- <div class="task" id="task1">
+                    <div class="taskTitle">
+                        <p>Server Setup</p>
+                        <p>5 minutes</p>
+                    </div>
+                    <p>Open</p>
+                </div> -->
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="serverTask">
+            </div>        
+        </div>
+
+        <div class="infoPanel">
+            <h1>Info</h1>
+
+            <p>Name : James Taylor</p>
+            <p>Email : taylor.james@gmail.com</p>
+
+            <h2>Orders</h2>
+
+            <p>OrderID : </p>
+            <p>DOO : 05/05/20</p>
+            <p>DOE : 05/06/20</p>
+
+            <h2>Cards</h2>
+
+            <p>Visa 5365 exp 12/24</p>
+            <p>Is recurring</p>
+        </div>
+
+    </div>
+
+    <script src="main.js"></script>
 </body>
+
 </html>
