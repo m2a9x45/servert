@@ -13,7 +13,7 @@ func Staffauth(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("middleware", r.URL)
 
-		c, err := r.Cookie("token")
+		c, err := r.Cookie("staff_token")
 		if err != nil {
 			if err == http.ErrNoCookie {
 				// If the cookie is not set, return an unauthorized status
