@@ -5,7 +5,7 @@ body {
 }
 
 .contaniner {
-    display: grid;
+    display: none;
     grid-template-columns: 25% auto 25%;
     height: 100vh;
 }
@@ -55,4 +55,9 @@ body {
 
 .task p {
     margin: 0px;
+}
+
+.serverTask {
+    width: 95%;
+    margin: 1rem auto;
 }

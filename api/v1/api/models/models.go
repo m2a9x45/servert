@@ -42,6 +42,12 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
+type ClaimsStaff struct {
+	StaffID string `json:"staff_id"`
+	Role    string `json:"role"`
+	jwt.StandardClaims
+}
+
 type CheckoutData struct {
 	ClientSecret string `json:"clientecret"`
 }
