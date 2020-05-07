@@ -59,8 +59,6 @@ func main() {
 	auth.HandleFunc("/refresh", routes.Refresh).Methods("GET")
 	auth.HandleFunc("/reset", routes.Reset).Methods("POST", "OPTIONS")
 	auth.HandleFunc("/restpassword", routes.UpdatePasswordFromReset).Methods("PATCH", "OPTIONS")
-	auth.HandleFunc("/stafflogin", routes.SigninStaff).Methods("POST", "OPTIONS")
-	auth.HandleFunc("/isstaffloggedin", routes.IsLoggedInStaff).Methods("GET")
 
 	//account.go
 	account := r.PathPrefix("/account").Subrouter()
@@ -79,12 +77,6 @@ func main() {
 	r.HandleFunc("/create-payment-intent/{prodID}/{dur}/", routes.CreatePaymentIntent).Methods("GET")
 	r.HandleFunc("/makeorder", routes.MakeOrder).Methods("POST", "OPTIONS")
 	r.HandleFunc("/getorders", routes.GetOrders).Methods("GET")
-
-	// internal
-	internal := r.PathPrefix("/internal").Subrouter()
-	internal.Use(routes.Staffauth)
-	internal.HandleFunc("/tasks", routes.GetTasks).Methods("GET")
-	internal.HandleFunc("/refresh", routes.RefreshStaff).Methods("GET")
 
 	r.HandleFunc("/", hello).Methods("GET")
 
