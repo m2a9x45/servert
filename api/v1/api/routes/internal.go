@@ -12,34 +12,8 @@ import (
 )
 
 func RefreshStaff(w http.ResponseWriter, r *http.Request) {
-	// (BEGIN) The code uptil this point is the same as the first part of the `Welcome` route
-	c, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	tknStr := c.Value
-	claims := &models.ClaimsStaff{}
-	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
-	})
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-	// (END) The code up-till this point is the same as the first part of the `Welcome` route
+	uid := r.Context().Value("user")
+	claims := uid.(*models.ClaimsStaff)
 
 	// We ensure that a new token is not issued until enough time has elapsed
 	// In this case, a new token will only be issued if the old token is within
@@ -68,10 +42,10 @@ func RefreshStaff(w http.ResponseWriter, r *http.Request) {
 			Path:     "/",
 		})
 		return
-	} else {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
 	}
+
+	w.WriteHeader(http.StatusUnauthorized)
+	return
 
 	// Set the new token as the users `token` cookie
 

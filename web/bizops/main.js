@@ -32,6 +32,7 @@ window.addEventListener("load", () => {
             loginFrom.style.display = "none";
             contaniner.style.display = "grid";
             getTasks();
+            refershToken();
         }
 
     })
@@ -64,6 +65,7 @@ loginFrom.addEventListener("submit", (e) => {
             loginFrom.style.display = "none";
             contaniner.style.display = "grid";
             getTasks();
+            refershToken();
         }
 
     })

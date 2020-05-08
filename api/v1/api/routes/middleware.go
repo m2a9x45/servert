@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -53,6 +54,7 @@ func Staffauth(h http.Handler) http.Handler {
 			return
 		}
 
-		h.ServeHTTP(w, r)
+		ctx := context.WithValue(r.Context(), "user", claims)
+		h.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
