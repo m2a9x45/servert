@@ -29,7 +29,7 @@ submitButton.addEventListener("click", () => {
             }
             console.log(formData);
 
-            fetch(`${URL_API}/account/intrest`, {
+            fetch(`${URL_API}/intrest`, {
                     method: 'post',
                     credentials: 'include',
                     headers: {
