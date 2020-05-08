@@ -12,7 +12,6 @@ import (
 
 	"../database"
 	"../models"
-	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"github.com/segmentio/ksuid"
 	stripe "github.com/stripe/stripe-go"
@@ -99,36 +98,8 @@ func createTask(user string, taskType string) {
 
 func CreatePaymentIntent(w http.ResponseWriter, r *http.Request) {
 
-	// add auth to CreatePaymentIntent
-
-	c, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	tknStr := c.Value
-
-	claims := &models.Claims{}
-
-	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
-	})
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	uid := r.Context().Value("user")
+	claims := uid.(*models.Claims)
 
 	vars := mux.Vars(r)
 	id := vars["prodID"]
@@ -249,34 +220,8 @@ func MakeOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	tknStr := c.Value
-
-	claims := &models.Claims{}
-
-	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
-	})
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	uid := r.Context().Value("user")
+	claims := uid.(*models.Claims)
 
 	order := models.OrderData{}
 
@@ -329,34 +274,8 @@ func MakeOrder(w http.ResponseWriter, r *http.Request) {
 
 // GetOrders will return a list of orders for an account
 func GetOrders(w http.ResponseWriter, r *http.Request) {
-	c, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	tknStr := c.Value
-
-	claims := &models.Claims{}
-
-	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
-	})
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	uid := r.Context().Value("user")
+	claims := uid.(*models.Claims)
 
 	result, err := database.DBCon.Query("SELECT order_id, prod_id from orders WHERE user_id=(?)", claims.UserID)
 	if err != nil {

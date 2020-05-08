@@ -59,26 +59,31 @@ func main() {
 	auth.HandleFunc("/refresh", routes.Refresh).Methods("GET")
 	auth.HandleFunc("/reset", routes.Reset).Methods("POST", "OPTIONS")
 	auth.HandleFunc("/restpassword", routes.UpdatePasswordFromReset).Methods("PATCH", "OPTIONS")
+
 	auth.HandleFunc("/stafflogin", routes.SigninStaff).Methods("POST", "OPTIONS")
 	auth.HandleFunc("/isstaffloggedin", routes.IsLoggedInStaff).Methods("GET")
 
 	//account.go
 	account := r.PathPrefix("/account").Subrouter()
-	account.HandleFunc("/intrest", routes.Intrest).Methods("POST", "OPTIONS")
+	account.Use(routes.Userauth)
 	account.HandleFunc("/account", routes.Account).Methods("GET")
 	account.HandleFunc("/accountinfo", routes.AccountInfo).Methods("GET")
 	account.HandleFunc("/receipt/{receiptID}", routes.Getreceipt).Methods("GET")
 	account.HandleFunc("/customercards", routes.Getcustomercards).Methods("GET")
+
+	r.HandleFunc("/intrest", routes.Intrest).Methods("POST", "OPTIONS")
 
 	//products.go
 	r.HandleFunc("/products/{prodID}", routes.GetProducts).Methods("GET")
 	r.HandleFunc("/products", routes.GetProducts).Methods("GET")
 
 	//orders.go
-	r.HandleFunc("/create-payment-intent/{prodID}/{dur}/{cardID}", routes.CreatePaymentIntent).Methods("GET")
-	r.HandleFunc("/create-payment-intent/{prodID}/{dur}/", routes.CreatePaymentIntent).Methods("GET")
-	r.HandleFunc("/makeorder", routes.MakeOrder).Methods("POST", "OPTIONS")
-	r.HandleFunc("/getorders", routes.GetOrders).Methods("GET")
+	order := r.PathPrefix("/order").Subrouter()
+	order.Use(routes.Userauth)
+	order.HandleFunc("/create-payment-intent/{prodID}/{dur}/{cardID}", routes.CreatePaymentIntent).Methods("GET")
+	order.HandleFunc("/create-payment-intent/{prodID}/{dur}/", routes.CreatePaymentIntent).Methods("GET")
+	order.HandleFunc("/makeorder", routes.MakeOrder).Methods("POST", "OPTIONS")
+	order.HandleFunc("/getorders", routes.GetOrders).Methods("GET")
 
 	// internal
 	internal := r.PathPrefix("/internal").Subrouter()

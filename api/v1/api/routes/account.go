@@ -11,7 +11,6 @@ import (
 	"../database"
 	"../models"
 
-	jwt "github.com/dgrijalva/jwt-go"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/gorilla/mux"
@@ -101,44 +100,8 @@ func Intrest(w http.ResponseWriter, r *http.Request) {
 }
 
 func Account(w http.ResponseWriter, r *http.Request) {
-	// We can obtain the session token from the requests cookies, which come with every request
-	c, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			// If the cookie is not set, return an unauthorized status
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		// For any other type of error, return a bad request status
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	// Get the JWT string from the cookie
-	tknStr := c.Value
-
-	// Initialize a new instance of `Claims`
-	claims := &models.Claims{}
-
-	// Parse the JWT string and store the result in `claims`.
-	// Note that we are passing the key in this method as well. This method will return an error
-	// if the token is invalid (if it has expired according to the expiry time we set on sign in),
-	// or if the signature does not match
-	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
-	})
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	uid := r.Context().Value("user")
+	claims := uid.(*models.Claims)
 
 	res := models.ResObj{Success: true, Message: claims.UserID}
 
@@ -146,39 +109,8 @@ func Account(w http.ResponseWriter, r *http.Request) {
 }
 
 func AccountInfo(w http.ResponseWriter, r *http.Request) {
-	c, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			// If the cookie is not set, return an unauthorized status
-			fmt.Println(err)
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		// For any other type of error, return a bad request status
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	tknStr := c.Value
-
-	claims := &models.Claims{}
-
-	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
-	})
-
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	uid := r.Context().Value("user")
+	claims := uid.(*models.Claims)
 
 	result, err := database.DBCon.Query("SELECT name, email from users WHERE user_id=(?)", claims.UserID)
 	if err != nil {
@@ -211,38 +143,17 @@ func AccountInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func Getreceipt(w http.ResponseWriter, r *http.Request) {
+
+	// Look into further but I think an authed user can access a recipt that isn't theirs
+
 	if r.Method == http.MethodOptions {
 		return
 	}
 
-	c, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	tknStr := c.Value
+	// uid := r.Context().Value("user")
+	// claims := uid.(*models.Claims)
 
-	claims := &models.Claims{}
-
-	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
-	})
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	// fmt.Println(claims.UserID)
 
 	vars := mux.Vars(r)
 	id := vars["receiptID"]
@@ -320,35 +231,8 @@ func Getreceipt(w http.ResponseWriter, r *http.Request) {
 
 func Getcustomercards(w http.ResponseWriter, r *http.Request) {
 
-	c, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	tknStr := c.Value
-
-	claims := &models.Claims{}
-
-	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
-	})
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
+	uid := r.Context().Value("user")
+	claims := uid.(*models.Claims)
 	// get customer ID from DB using JWT userID
 
 	var customerID string

@@ -253,7 +253,7 @@ function addProdToPage(product) {
 form.addEventListener('submit', function (ev) {
     ev.preventDefault();
     const dur = duration;
-    var response = fetch(`${URL_API}/create-payment-intent/${c}/${dur}/`, {
+    var response = fetch(`${URL_API}/order/create-payment-intent/${c}/${dur}/`, {
         method: "GET",
         credentials: "include",
     }).then(function (response) {
@@ -299,7 +299,7 @@ buybutton.addEventListener('click', () => {
 
 
     const dur = duration;
-    var response = fetch(`${URL_API}/create-payment-intent/${c}/${dur}/${cardID}`, {
+    var response = fetch(`${URL_API}/order/create-payment-intent/${c}/${dur}/${cardID}`, {
         method: "GET",
         credentials: "include",
     }).then(function (response) {
@@ -362,7 +362,7 @@ function createOrder(payID, prodID, dur) {
     console.log(formData);
 
 
-    fetch(`${URL_API}/makeorder`, {
+    fetch(`${URL_API}/order/makeorder`, {
             method: 'post',
             credentials: 'include',
             headers: {

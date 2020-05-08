@@ -86,7 +86,7 @@ fetch(`${URL_API}/account/customercards`, {
 
 
 
-fetch(`${URL_API}/getorders`, {
+fetch(`${URL_API}/order/getorders`, {
     method: 'get',
     credentials: 'include',
     headers: {

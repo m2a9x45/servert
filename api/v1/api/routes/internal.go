@@ -12,7 +12,7 @@ import (
 )
 
 func RefreshStaff(w http.ResponseWriter, r *http.Request) {
-	uid := r.Context().Value("user")
+	uid := r.Context().Value("staff")
 	claims := uid.(*models.ClaimsStaff)
 
 	// We ensure that a new token is not issued until enough time has elapsed
