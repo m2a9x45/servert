@@ -19,7 +19,7 @@ body {
 
 .tasksList::-webkit-scrollbar {
     display: none;
-  }
+}
 
 .task {
     background-color: #e6e6e6;
