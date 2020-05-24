@@ -91,6 +91,10 @@ func main() {
 	internal.HandleFunc("/tasks", routes.GetTasks).Methods("GET")
 	internal.HandleFunc("/refresh", routes.RefreshStaff).Methods("GET")
 
+	// servers
+	servers := r.PathPrefix("/servers").Subrouter()
+	servers.Use(routes.Userauth)
+	servers.HandleFunc("/active", routes.GetServer).Methods("GET")
 	r.HandleFunc("/", hello).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(header, methods, origin, creds)(r)))

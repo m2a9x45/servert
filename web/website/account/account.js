@@ -83,6 +83,21 @@ fetch(`${URL_API}/account/customercards`, {
     console.log(response.status); 
 });
 
+fetch(`${URL_API}/servers/active`, {
+    method: 'get',
+    credentials: 'include',
+    headers: {
+        "Content-type": "application/json",
+    }
+})
+.then(response => response.json())
+.then (data => {
+    console.log(data);
+})
+.catch(function (error) {
+    console.log('Request failed', error);
+    console.log(response.status); 
+});
 
 
 

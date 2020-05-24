@@ -122,3 +122,10 @@ type Task struct {
 	Status    string         `json="status"`
 	CreatedAt int            `json="createdAt"`
 }
+
+type Server struct {
+	UUID        string `json="uuid"`
+	VirtiualID  string `json="virid"`
+	UserID      string `json="userID"`
+	ActiveOrder string `json="orderID"`
+}
