@@ -1,6 +1,7 @@
 const orderInfo = document.querySelector(".orderInfo");
 const userData = document.querySelector(".userData");
 const cardInfo = document.querySelector(".cardInfo");
+const serverInfo = document.querySelector(".serverInfo");
 
 const URL_API = "http://127.0.0.1:8000";
 
@@ -93,6 +94,18 @@ fetch(`${URL_API}/servers/active`, {
 .then(response => response.json())
 .then (data => {
     console.log(data);
+
+    data.forEach(server => {
+        let uuid = document.createElement("p")
+        uuid.innerText = "Name : " + server.UUID;
+
+        let order = document.createElement("p")
+        order.innerText = "Active order : " + server.ActiveOrder;
+
+        serverInfo.appendChild(uuid);
+        serverInfo.appendChild(order);
+    });
+    
 })
 .catch(function (error) {
     console.log('Request failed', error);
