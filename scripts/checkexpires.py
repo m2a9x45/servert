@@ -37,9 +37,12 @@ for x in myresult:
         # Will only occur if the order expires today
         print("Expires today : ", x)
 
+        # We need to charge the customer again
+
     if curentUnixtime >= ts:
         # Will happen if the current time is greater or equal to the expiry time. Will triger for orders expired in the past
         print("Expired in the past : ", x)
+        # need to soft delete that order 
 
     print("--------------------------------------------------------------")
 

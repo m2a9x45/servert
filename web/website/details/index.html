@@ -24,6 +24,9 @@
 
     <main>
         <div class="content">
+            <div class="errorDiv">
+                <p id="errorMessage"></p>
+            </div>
 
             <h2>Rent duration : </h2>
             <div class="rentgroup">
@@ -49,7 +52,7 @@
             <div class="orderInfo">
                 
             </div>
-            <h2>Select payment card : </h2>
+            <h2 id="selectCardText">Select payment card : </h2>
             <div class="cardInfo">
                 <!-- <input type="radio" name="card" value="1">
                 <label for="">Visa 3156</label><br>
@@ -59,7 +62,22 @@
                 <label for="">Amex 1582</label><br> -->
             </div>
 
-            <a id="newCard" href="">Use a new card</a>
+            <div class="newCard">
+                <a id="newCard" href="">Use a new card</a>
+            </div>
+                
+            <div>
+                <input type="checkbox" id="terms" name="terms" value="">
+                <label for="terms">I agree to the <a id="tandcLink" href="#">terms and condisions</a></label><br>
+                <div class="recurringPaymentsDiv">
+                    <input type="checkbox" id="recurringPayments" name="recurringPayments" value="">
+                    <label for="recurringPayments">I would like to setup recurring payments.
+                    </label>
+                </div>           
+            </div>
+
+            
+            
 
             <div class="payment">
                 <button id="buybutton">Buy</button>

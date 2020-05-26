@@ -41,6 +41,20 @@ nav ul li:first-child {
     color: #2a64b8;
 }
 
+.errorDiv {
+    display: none;
+    width: 100%;
+    background-color: #db4a40;
+    padding: 0.5% 5% 0.5% 5%;
+    border-radius: 10px;
+}
+
+#errorMessage {
+    text-align: center;
+    font-size: 14pt;
+    color: white;
+}
+
 .orderInfo {
     text-align: center;
     margin: 2% auto;
@@ -79,6 +93,18 @@ nav ul li:first-child {
 }
 
 #newCard {
+    color: #4CAF50;
+    text-decoration: underline;
+    text-align: center;
+    font-size: 14pt;
+}
+
+.newCard {
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+#tandcLink {
     color: #4CAF50;
     text-decoration: underline;
     text-align: center;
