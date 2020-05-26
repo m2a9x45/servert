@@ -3,7 +3,6 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -239,14 +238,9 @@ func MakeOrder(w http.ResponseWriter, r *http.Request) {
 
 	order := models.OrderData{}
 
-	jsn, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Fatal("Error wilst reading r body", err)
-	}
-
-	err = json.Unmarshal(jsn, &order)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&order); err != nil {
 		log.Fatal("Error wilst unmarshaling json", err)
+		return
 	}
 
 	OrderID := generateOrderID()

@@ -3,7 +3,6 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -72,14 +71,9 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 
 	signup := models.SignUpObj{}
 
-	jsn, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Fatal("Error wilst reading r body", err)
-	}
-
-	err = json.Unmarshal(jsn, &signup)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&signup); err != nil {
 		log.Fatal("Error wilst unmarshaling json", err)
+		return
 	}
 
 	log.Println(signup)
@@ -177,14 +171,9 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 
 	signin := models.SignUpObj{}
 
-	jsn, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Fatal("Error wilst reading r body", err)
-	}
-
-	err = json.Unmarshal(jsn, &signin)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&signin); err != nil {
 		log.Fatal("Error wilst unmarshaling json", err)
+		return
 	}
 
 	log.Println(signin, "here")
@@ -323,14 +312,9 @@ func Reset(w http.ResponseWriter, r *http.Request) {
 
 	reset := models.Reset{}
 
-	jsn, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Fatal("Error wilst reading r body", err)
-	}
-
-	err = json.Unmarshal(jsn, &reset)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&reset); err != nil {
 		log.Fatal("Error wilst unmarshaling json", err)
+		return
 	}
 
 	log.Println(reset)
@@ -413,14 +397,9 @@ func UpdatePasswordFromReset(w http.ResponseWriter, r *http.Request) {
 
 	reset := models.ResetPassword{}
 
-	jsn, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Fatal("Error wilst reading r body", err)
-	}
-
-	err = json.Unmarshal(jsn, &reset)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&reset); err != nil {
 		log.Fatal("Error wilst unmarshaling json", err)
+		return
 	}
 
 	log.Println(reset.Token)
@@ -601,14 +580,9 @@ func SigninStaff(w http.ResponseWriter, r *http.Request) {
 
 	signin := models.SignUpObj{}
 
-	jsn, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Fatal("Error wilst reading r body", err)
-	}
-
-	err = json.Unmarshal(jsn, &signin)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&signin); err != nil {
 		log.Fatal("Error wilst unmarshaling json", err)
+		return
 	}
 
 	log.Println(signin, "here")
