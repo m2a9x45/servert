@@ -3,7 +3,6 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -87,6 +86,20 @@ func createTask(user string, taskType string) {
 	secs := now.Unix()
 
 	result, err := database.DBCon.Query("INSERT INTO tasks (task_id, user_id, status, link_id, created_at) VALUES (?,?,?,?,?)", taskID, user, status, taskType, secs)
+	if err != nil {
+		log.Fatal("Error wilst inserting into DB", err)
+	}
+
+	defer result.Close()
+
+	fmt.Println("Inserted Into DB")
+}
+
+func createServer(userID string, orderID string) {
+
+	// this is where we make calls to promox to setup the server
+
+	result, err := database.DBCon.Query("INSERT INTO servers (server_id, virtiual_id, user_id, active_order) VALUES (?,?,?,?)", "server_1", "placeholder", userID, orderID)
 	if err != nil {
 		log.Fatal("Error wilst inserting into DB", err)
 	}
@@ -225,14 +238,9 @@ func MakeOrder(w http.ResponseWriter, r *http.Request) {
 
 	order := models.OrderData{}
 
-	jsn, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Fatal("Error wilst reading r body", err)
-	}
-
-	err = json.Unmarshal(jsn, &order)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&order); err != nil {
 		log.Fatal("Error wilst unmarshaling json", err)
+		return
 	}
 
 	OrderID := generateOrderID()
@@ -264,6 +272,7 @@ func MakeOrder(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Inserted Into DB")
 
+	createServer(claims.UserID, OrderID)
 	createTask(claims.UserID, OrderID)
 
 	res := models.ResObj{Success: true, Message: OrderID}

@@ -80,7 +80,16 @@ nav ul li:first-child {
     margin: 2% auto;
 }
 
+#cardInfo {
+    font-weight: 400;
+}
+
 .cardDetails {
     display: flex;
     justify-content: space-between;
+}
+
+#serverInfo {
+    margin-bottom: 0px;
+    font-weight: 400;
 }
